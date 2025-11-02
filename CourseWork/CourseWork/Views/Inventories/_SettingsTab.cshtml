@@ -1,0 +1,189 @@
+﻿@model CourseWork.Models.Inventories
+
+<div class="container mt-3">
+    <h3 class="mb-3">Настройки инвентаря</h3>
+
+    <form asp-action="SaveSettings" asp-controller="Inventories" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-3">
+            <!-- Название -->
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label">Название</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
+
+            <!-- Категория -->
+            <div class="col-md-6">
+                <label asp-for="Category" class="form-label">Категория</label>
+                <select asp-for="Category" class="form-select">
+                    <option>Equipment</option>
+                    <option>Furniture</option>
+                    <option>Book</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <!-- Описание (Markdown) -->
+            <div class="col-12">
+                <label asp-for="Description" class="form-label">Описание (Markdown)</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Введите описание..."></textarea>
+                <small class="text-muted">Поддерживается Markdown — можно использовать **жирный**, *курсив* и списки.</small>
+            </div>
+
+            <!-- Изображение -->
+            <div class="col-md-6">
+                <label asp-for="ImageUrl" class="form-label">Изображение (URL)</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="mt-2">
+                        <img src="@Model.ImageUrl" alt="Изображение инвентаря" class="img-thumbnail" style="max-height:150px;" />
+                    </div>
+                }
+            </div>
+
+            <!-- Публичность -->
+            <div class="col-md-6 form-check mt-4">
+                <input asp-for="IsPublic" class="form-check-input" />
+                <label asp-for="IsPublic" class="form-check-label">Публичный инвентарь</label>
+                <div class="form-text">Если включено — все аутентифицированные пользователи смогут добавлять элементы.</div>
+            </div>
+
+            <!-- Теги -->
+            <div class="col-12 position-relative">
+                <label class="form-label">Теги</label>
+                <input id="tagInput" class="form-control" placeholder="Введите теги..." />
+                <div id="tagSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+                <small class="text-muted">Начните вводить — появятся подсказки из существующих тегов.</small>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- Конструктор пользовательского ID -->
+        <h4>Пользовательский ID</h4>
+        <p class="text-muted">
+            Настройте формат уникального ID элементов.
+            <span class="text-info" data-bs-toggle="popover" data-bs-trigger="hover" title="Помощь"
+                  data-bs-content="Каждый элемент ID может быть текстом, числом, GUID, датой или последовательностью.">
+                ?
+            </span>
+        </p>
+
+        <div id="idFormatBuilder" class="d-flex flex-wrap gap-2 border p-3 rounded bg-light">
+            <!-- части ID -->
+        </div>
+
+        <div class="dropdown mt-2">
+            <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Добавить элемент</button>
+            <ul class="dropdown-menu">
+                <li><button class="dropdown-item" type="button" onclick="addPart('FixedText')">Фиксированный текст</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Random6')">6-значное число</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Random9')">9-значное число</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Guid')">GUID</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('DateTime')">Дата/время</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Sequence')">Последовательность</button></li>
+            </ul>
+        </div>
+
+        <input type="hidden" id="customIdFormatJson" name="CustomIdFormatJson" value="@Model.CustomIdFormatJson" />
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">💾 Сохранить настройки</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // ----------------------------
+        //  Автодополнение тегов
+        // ----------------------------
+        document.getElementById('tagInput').addEventListener('input', async function () {
+            const query = this.value.trim();
+            const suggestionBox = document.getElementById('tagSuggestions');
+            suggestionBox.innerHTML = '';
+            if (query.length < 1) return;
+
+            const res = await fetch(`/Inventories/GetTagSuggestions?term=${encodeURIComponent(query)}`);
+            const tags = await res.json();
+
+            tags.forEach(tag => {
+                const item = document.createElement('button');
+                item.className = 'list-group-item list-group-item-action';
+                item.type = 'button';
+                item.textContent = tag;
+                item.onclick = () => {
+                    this.value = tag;
+                    suggestionBox.innerHTML = '';
+                };
+                suggestionBox.appendChild(item);
+            });
+        });
+
+        // ----------------------------
+        //  Конструктор ID
+        // ----------------------------
+        let parts = [];
+
+        // если есть сохранённый JSON, загружаем
+        try {
+            const saved = document.getElementById('customIdFormatJson').value;
+            if (saved) parts = JSON.parse(saved);
+        } catch { parts = []; }
+
+        function addPart(type) {
+            const part = { type, value: '', order: parts.length };
+            parts.push(part);
+            renderParts();
+            updateHiddenInput();
+        }
+
+        function removePart(index) {
+            parts.splice(index, 1);
+            renderParts();
+            updateHiddenInput();
+        }
+
+        function renderParts() {
+            const container = document.getElementById('idFormatBuilder');
+            container.innerHTML = '';
+            parts.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border rounded p-2 d-flex align-items-center gap-2';
+                div.draggable = true;
+                div.ondragstart = e => e.dataTransfer.setData('index', i);
+                div.ondrop = e => swapParts(i, e);
+                div.ondragover = e => e.preventDefault();
+
+                div.innerHTML = `
+                    <span class="fw-bold">${p.type}</span>
+                    ${p.type === 'FixedText' ? `<input class='form-control form-control-sm' value='${p.value || ""}'
+                        placeholder='текст...' onchange='parts[${i}].value=this.value;updateHiddenInput();' />` : ''}
+                    <button class='btn btn-sm btn-outline-danger' onclick='removePart(${i})'>✕</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function swapParts(targetIndex, e) {
+            e.preventDefault();
+            const sourceIndex = e.dataTransfer.getData('index');
+            if (sourceIndex == targetIndex) return;
+            const moved = parts.splice(sourceIndex, 1)[0];
+            parts.splice(targetIndex, 0, moved);
+            renderParts();
+            updateHiddenInput();
+        }
+
+        function updateHiddenInput() {
+            document.getElementById('customIdFormatJson').value = JSON.stringify(parts);
+        }
+
+        renderParts();
+
+        // Bootstrap popovers
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el));
+    </script>
+}

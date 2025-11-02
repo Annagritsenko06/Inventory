@@ -1,0 +1,143 @@
+@model List<CourseWork.Models.UserProfile>
+@{
+    ViewData["Title"] = "Управление пользователями";
+}
+
+<div class="container mt-4">
+    <h2>Управление пользователями</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover" id="usersTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Имя пользователя</th>
+                    <th>Email</th>
+                    <th>Статус</th>
+                    <th>Дата регистрации</th>
+                    <th>Роль</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr data-user-id="@user.Id">
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>
+                            <span class="badge @(user.Status == "Active" ? "bg-success" : "bg-danger")">
+                                @user.Status
+                            </span>
+                        </td>
+                        <td>@user.RegistrationTime.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            <span class="badge @(user.IsAdmin ? "bg-warning" : "bg-secondary")">
+                                @(user.IsAdmin ? "Администратор" : "Пользователь")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                        onclick="toggleUserStatus('@user.Id')">
+                                    @(user.Status == "Active" ? "Заблокировать" : "Разблокировать")
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-warning" 
+                                        onclick="toggleAdminRole('@user.Id')">
+                                    @(user.IsAdmin ? "Убрать админа" : "Сделать админом")
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-info" 
+                                        onclick="viewUserDetails('@user.Id')">
+                                    Подробнее
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="deleteUser('@user.Id')">
+                                    Удалить
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function toggleUserStatus(userId) {
+            if (!confirm('Изменить статус пользователя?')) return;
+            
+            try {
+                const response = await fetch('/Admin/ToggleUserStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(userId)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + result.errors.join(', '));
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        async function toggleAdminRole(userId) {
+            if (!confirm('Изменить роль пользователя?')) return;
+            
+            try {
+                const response = await fetch('/Admin/ToggleAdminRole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(userId)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + result.errors.join(', '));
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        function viewUserDetails(userId) {
+            window.open('/Admin/UserDetails/' + userId, '_blank');
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Удалить пользователя? Это действие нельзя отменить!')) return;
+            
+            try {
+                const response = await fetch('/Admin/DeleteUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(userId)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (result.error || result.errors.join(', ')));
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+    </script>
+}

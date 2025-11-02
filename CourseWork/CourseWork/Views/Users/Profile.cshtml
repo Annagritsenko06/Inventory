@@ -1,0 +1,36 @@
+﻿@model CourseWork.Models.UserProfile
+
+<h2>Моя страница</h2>
+<input id="searchOwned" placeholder="Фильтр по именам" class="form-control mb-2" />
+<input id="searchWritable" placeholder="Фильтр по именам" class="form-control mb-2" />
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Мои инвентари</h3>
+        <div id="ownedContainer">
+            @await Html.PartialAsync("_TemplatesTable", Model.OwnedTemplates)
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h3>Инвентари с правом записи</h3>
+        <div id="writableContainer">
+            @await Html.PartialAsync("_TemplatesTable", Model.WritableTemplates)
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("searchOwned").addEventListener("keyup", function() {
+        const filter = this.value.toLowerCase();
+        document.querySelectorAll("#ownedContainer tbody tr").forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+        });
+    });
+
+    document.getElementById("searchWritable").addEventListener("keyup", function() {
+        const filter = this.value.toLowerCase();
+        document.querySelectorAll("#writableContainer tbody tr").forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+        });
+    });
+</script>

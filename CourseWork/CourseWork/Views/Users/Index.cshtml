@@ -1,0 +1,67 @@
+@model IEnumerable<CourseWork.Models.UserRolesViewModel>
+
+<div class="container mt-4">
+    <h2>User Management</h2>
+
+    <form method="post" id="toolbarForm">
+        <div class="d-flex gap-2 mb-3">
+            <button type="submit" formaction="@Url.Action("Block", "Users")" class="btn btn-primary">Block</button>
+            <button type="submit" formaction="@Url.Action("Unblock", "Users")" class="btn btn-success">Unblock</button>
+            <button type="submit" formaction="@Url.Action("Delete", "Users")" class="btn btn-danger">Delete</button>
+            <button type="submit" formaction="@Url.Action("AddAdminRole", "Users")" class="btn btn-outline-primary">Grant Admin</button>
+            <button type="submit" formaction="@Url.Action("RemoveAdminRole", "Users")" class="btn btn-outline-dark">Revoke Admin</button>
+        </div>
+
+        <input type="text" id="filterInput" class="form-control mb-3" placeholder="Filter users..." style="max-width:300px;" />
+
+        <table class="table align-middle table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderByDescending(u => u.User.Email))
+                {
+                    <tr>
+                        <td><input type="checkbox" name="selectedUsers" value="@item.User.Id" form="toolbarForm" /></td>
+                        <td>@item.User.UserName</td>
+                        <td>@item.User.Email</td>
+                        <td>
+                            @switch (item.User.Status?.ToLower())
+                            {
+                                case "active":
+                                    <span class="badge bg-success">Active</span>
+                                    break;
+                                case "blocked":
+                                    <span class="badge bg-danger">Blocked</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">Unverified</span>
+                                    break;
+                            }
+                        </td>
+                        <td>@string.Join(", ", item.Roles)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+    document.getElementById("selectAll").addEventListener("change", function () {
+        document.querySelectorAll("input[name='selectedUsers']").forEach(cb => cb.checked = this.checked);
+    });
+
+    document.getElementById("filterInput").addEventListener("keyup", function () {
+        const filter = this.value.toLowerCase();
+        document.querySelectorAll("tbody tr").forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+        });
+    });
+</script>

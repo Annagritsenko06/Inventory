@@ -1,0 +1,267 @@
+@model CourseWork.Models.InventoryWithItemsViewModel
+
+<div class="mb-3">
+    <h5>Пользовательские ID</h5>
+    <p class="text-muted">
+        Настройте формат пользовательских ID для элементов этого инвентаря.
+        ID будут генерироваться автоматически при создании элементов.
+    </p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div id="customIdBuilder" class="border rounded p-3 mb-3" style="min-height: 200px;">
+                <div class="text-muted text-center py-4">
+                    Перетащите элементы сюда для создания формата ID
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h6>Доступные элементы:</h6>
+            <div class="list-group" id="availableParts">
+                <div class="list-group-item draggable-part" data-type="0">
+                    <strong>Фиксированный текст</strong>
+                    <small class="d-block text-muted">Произвольный текст</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="1">
+                    <strong>20-битное число</strong>
+                    <small class="d-block text-muted">Случайное число (0-1048575)</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="2">
+                    <strong>32-битное число</strong>
+                    <small class="d-block text-muted">Случайное число (0-4294967295)</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="3">
+                    <strong>6-значное число</strong>
+                    <small class="d-block text-muted">000000-999999</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="4">
+                    <strong>9-значное число</strong>
+                    <small class="d-block text-muted">000000000-999999999</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="5">
+                    <strong>GUID</strong>
+                    <small class="d-block text-muted">Уникальный идентификатор</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="6">
+                    <strong>Дата/время</strong>
+                    <small class="d-block text-muted">Дата создания элемента</small>
+                </div>
+                <div class="list-group-item draggable-part" data-type="7">
+                    <strong>Последовательность</strong>
+                    <small class="d-block text-muted">1, 2, 3, ...</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h6>Предварительный просмотр:</h6>
+            <div class="alert alert-info">
+                <strong>Пример ID:</strong> <span id="previewId">ITEM_0001</span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-success" onclick="saveCustomIdFormat()">
+                Сохранить формат
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="clearCustomIdFormat()">
+                Очистить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let customIdParts = [];
+    let partCounter = 0;
+
+    // Инициализация существующего формата
+    @if (!string.IsNullOrEmpty(Model.Inventory.CustomIdFormatJson))
+    {
+        <text>
+        try {
+                const existingFormat = JSON.parse('@Html.Raw(Model.Inventory.CustomIdFormatJson)');
+            if (existingFormat && existingFormat.Parts) {
+                customIdParts = existingFormat.Parts;
+                renderCustomIdBuilder();
+                updatePreview();
+            }
+        } catch (e) {
+            console.error('Error parsing existing format:', e);
+        }
+        </text>
+    }
+
+    // Drag and drop functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const builder = document.getElementById('customIdBuilder');
+        const parts = document.querySelectorAll('.draggable-part');
+
+        // Make parts draggable
+        parts.forEach(part => {
+            part.draggable = true;
+            part.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: parseInt(this.dataset.type),
+                    value: '',
+                    format: ''
+                }));
+            });
+        });
+
+        // Builder drop zone
+        builder.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+
+        builder.addEventListener('dragleave', function(e) {
+            this.classList.remove('drag-over');
+        });
+
+        builder.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            addCustomIdPart(data);
+        });
+    });
+
+    function addCustomIdPart(partData) {
+        partData.id = partCounter++;
+        customIdParts.push(partData);
+        renderCustomIdBuilder();
+        updatePreview();
+    }
+
+    function renderCustomIdBuilder() {
+        const builder = document.getElementById('customIdBuilder');
+        
+        if (customIdParts.length === 0) {
+            builder.innerHTML = '<div class="text-muted text-center py-4">Перетащите элементы сюда для создания формата ID</div>';
+            return;
+        }
+
+        builder.innerHTML = customIdParts.map((part, index) => {
+            const partName = getPartName(part.type);
+            return `
+                <div class="custom-id-part border rounded p-2 mb-2 d-flex justify-content-between align-items-center" data-index="${index}">
+                    <div>
+                        <strong>${partName}</strong>
+                        ${part.type === 0 ? `<input type="text" class="form-control form-control-sm mt-1" placeholder="Введите текст" value="${part.value}" onchange="updatePartValue(${index}, this.value)">` : ''}
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePart(${index})">×</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getPartName(type) {
+        const names = [
+            'Фиксированный текст',
+            '20-битное число',
+            '32-битное число',
+            '6-значное число',
+            '9-значное число',
+            'GUID',
+            'Дата/время',
+            'Последовательность'
+        ];
+        return names[type] || 'Неизвестный тип';
+    }
+
+    function removePart(index) {
+        customIdParts.splice(index, 1);
+        renderCustomIdBuilder();
+        updatePreview();
+    }
+
+    function updatePartValue(index, value) {
+        customIdParts[index].value = value;
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const preview = document.getElementById('previewId');
+        if (customIdParts.length === 0) {
+            preview.textContent = 'ITEM_0001';
+            return;
+        }
+
+        const previewParts = customIdParts.map(part => {
+            switch (part.type) {
+                case 0: return part.value || 'TEXT';
+                case 1: return 'ABC12';
+                case 2: return 'ABCD1234';
+                case 3: return '123456';
+                case 4: return '123456789';
+                case 5: return 'a1b2c3d4';
+                case 6: return '20250101';
+                case 7: return '0001';
+                default: return '???';
+            }
+        });
+
+        preview.textContent = previewParts.join('');
+    }
+
+        function saveCustomIdFormat() {
+            const format = {
+                Parts: customIdParts
+            };
+
+            fetch('/Inventories/SaveCustomIdFormat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: JSON.stringify({
+                    inventoryId: @Model.Inventory.Id,
+                    format: format
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Формат ID сохранен!');
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при сохранении формата: ' + error.message);
+            });
+        }
+
+    function clearCustomIdFormat() {
+        if (confirm('Очистить формат ID?')) {
+            customIdParts = [];
+            renderCustomIdBuilder();
+            updatePreview();
+        }
+    }
+</script>
+
+<style>
+    .draggable-part {
+        cursor: grab;
+    }
+    
+    .draggable-part:active {
+        cursor: grabbing;
+    }
+    
+    #customIdBuilder.drag-over {
+        background-color: #f8f9fa;
+        border-color: #007bff;
+    }
+    
+    .custom-id-part {
+        background-color: #f8f9fa;
+    }
+</style>

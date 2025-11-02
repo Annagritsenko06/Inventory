@@ -1,0 +1,86 @@
+﻿@model IEnumerable<CourseWork.Models.Inventories>
+@{
+    ViewData["Title"] = "Inventories";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>All Inventories</h2>
+    <a asp-controller="Inventories" asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create inventory
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var inv in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(inv.ImageUrl))
+                    {
+                        <img src="@inv.ImageUrl" class="card-img-top" alt="@inv.Name" style="height: 200px; object-fit: cover;">
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a asp-action="Details" asp-route-id="@inv.Id" class="text-decoration-none">@inv.Name</a>
+                        </h5>
+                        <p class="card-text text-muted">@(inv.Description?.Length > 100 ? inv.Description.Substring(0, 100) + "..." : inv.Description)</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary">@inv.Category</span>
+                                <span class="badge bg-@(inv.IsPublic ? "success" : "secondary")">
+                                    @(inv.IsPublic ? "Public" : "Private")
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-list"></i> @(inv.Fields?.Count() ?? 0) fields
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-user"></i> @inv.OwnerId.ToString().Substring(0, 8)...
+                                </small>
+                            </div>
+                            @if (inv.Tags.Any())
+                            {
+                                <div class="mt-2">
+                                    @foreach (var tag in inv.Tags.Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark me-1">@tag.Name</span>
+                                    }
+                                    @if (inv.Tags.Count() > 3)
+                                    {
+                                        <span class="badge bg-light text-dark">+@(inv.Tags.Count() - 3) more</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-center">
+        <h5>No inventories found</h5>
+        <p>Try adjusting your search criteria or create a new inventory.</p>
+        <a asp-controller="Inventories" asp-action="Create" class="btn btn-primary">Create your first inventory</a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#invTable').DataTable({
+                columns: [
+                    null,
+                    { width: "10%" },
+                    { width: "10%" },
+                    { width: "20%" }
+                ]
+            });
+        });
+    </script>
+}

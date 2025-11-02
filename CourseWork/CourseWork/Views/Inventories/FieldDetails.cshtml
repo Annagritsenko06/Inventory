@@ -1,0 +1,60 @@
+﻿@model CourseWork.Models.InventoryField
+@{
+    bool isEdit = (bool)(ViewData["IsEdit"] ?? false);
+    string[] fieldTypes = { "Однострочный текст", "Многострочный текст", "Число", "Ссылка", "Да/Нет" };
+}
+
+<h2>@(isEdit ? "✏️ Редактирование поля" : "👁 Просмотр поля")</h2>
+
+<form asp-action="SaveFieldDetails" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="InventoryId" value="@Model.InventoryId" />
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Название</label>
+        <input type="text" name="Name" value="@Model.Name" class="form-control" @(isEdit ? "" : "readonly") />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Описание</label>
+        <textarea name="Description" class="form-control" rows="3" @(isEdit ? "" : "readonly")>@Model.Description</textarea>
+    </div>
+
+  
+    @{
+        var fieldTypes = new[] { "Однострочный текст", "Многострочный текст", "Число", "Ссылка", "Да/Нет" };
+    }
+
+<select name="Type" class="form-select" @(isEdit ? "" : "disabled")>
+        @for (int i = 0; i < fieldTypes.Length; i++)
+        {
+            if (Model.Type == (CourseWork.Models.FieldType)i)
+            {
+                    <option value="@i" selected>@fieldTypes[i]</option>
+            }
+            else
+            {
+                    <option value="@i">@fieldTypes[i]</option>
+            }
+        }
+</select>
+
+
+
+
+    <div class="form-check mb-3">
+        <input type="checkbox" name="ShowInTable" class="form-check-input" value="true" @(Model.ShowInTable ? "checked" : "") @(isEdit ? "" : "disabled") />
+        <label class="form-check-label">Отображать в таблице</label>
+    </div>
+
+    @if (isEdit)
+    {
+        <button type="submit" class="btn btn-success mt-3">💾 Сохранить изменения</button>
+    }
+    else
+    {
+        <a asp-action="FieldDetails" asp-route-id="@Model.Id" asp-route-isEdit="true"
+           class="btn btn-outline-primary mt-3">✏️ Редактировать</a>
+    }
+</form>

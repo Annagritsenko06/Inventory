@@ -1,0 +1,162 @@
+﻿@model IEnumerable<CourseWork.Models.Inventories>
+@using Microsoft.AspNetCore.Mvc.Localization
+@{
+    ViewData["Title"] = "Главная";
+    var tags = ViewBag.Tags as IEnumerable<string> ?? Enumerable.Empty<string>();
+}
+@inject IViewLocalizer L
+<div class="bg-light border-bottom py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold text-dark mb-3">Inventory Manager</h1>
+                <p class="lead text-muted mb-4">
+                    @L["WelcomeMessage"]
+                </p>
+                <a asp-controller="Inventories" asp-action="Create" class="btn btn-dark btn-lg rounded-pill px-4">
+                    <i class="fas fa-plus me-2"></i>@L["Create"]
+                </a>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-clipboard-list text-secondary opacity-25" style="font-size: 7rem;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- ==================== Последние инвентари ==================== -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h4 class="fw-semibold text-dark mb-3">
+                        <i class="fas fa-clock me-2 text-secondary"></i>@L["LastInv"]
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr class="text-muted small text-uppercase">
+                                        <th>@L["Name"]</th>
+                                        <th>@L["Category"]</th>
+                                        <th>@L["Status"]</th>
+                                        <th class="text-end">@L["Actions"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var inv in Model.Take(5))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id"
+                                                   class="text-dark fw-semibold text-decoration-none">
+                                                    @inv.Name
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a asp-controller="Inventories" asp-action="ByTag" asp-route-tag="@inv.Category"
+                                                   class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle px-3 py-2">
+                                                    @inv.Category
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @if (inv.IsPublic)
+                                                {
+                                                    <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success-subtle px-3 py-2">Публичный</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge rounded-pill bg-warning bg-opacity-10 text-warning border border-warning-subtle px-3 py-2">Приватный</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id"
+                                                   class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-inbox mb-3" style="font-size: 3rem;"></i>
+                            <p>@L["Noinv"]</p>
+                            <a asp-controller="Inventories" asp-action="Create" class="btn btn-outline-dark rounded-pill">
+                                @L["CreateFirst"]
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== Правая панель ==================== -->
+        <div class="col-lg-4">
+            <!-- Теги -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="fw-semibold text-dark mb-3">
+                        <i class="fas fa-tags me-2 text-secondary"></i>@L["PopularTags"]
+                    </h5>
+                </div>
+                <div class="card-body pt-0">
+                    @if (tags.Any())
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var tag in tags)
+                            {
+                                <a asp-controller="Inventories" asp-action="ByTag" asp-route-tag="@tag"
+                                   class="badge rounded-pill bg-light text-secondary border px-3 py-2">
+                                    <i class="fas fa-hashtag me-1"></i>@tag
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">@L["NoTags"]</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="fw-semibold text-dark mb-3">
+                        <i class="fas fa-chart-bar me-2 text-secondary"></i>@L["Statistics"]
+                    </h5>
+                </div>
+                <div class="card-body text-center pt-0">
+                    <div class="row">
+                        <div class="col-6 border-end">
+                            <h3 class="text-dark mb-0">@Model.Count()</h3>
+                            <small class="text-muted">@L["Inventories"]</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="text-dark mb-0">@Model.Sum(i => i.Items?.Count() ?? 0)</h3>
+                            <small class="text-muted">@L["Elements"]</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* @section Scripts { *@
+@*     <script> *@
+@*         $(document).ready(function () { *@
+@*             $('#recentTable').DataTable(); *@
+@*         }); *@
+@*     </script> *@
+@* } *@

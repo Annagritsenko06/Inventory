@@ -1,0 +1,55 @@
+﻿@model CourseWork.Models.Inventories
+
+@{
+    ViewData["Title"] = $"Добавление элемента в {ViewBag.InventoryName}";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="AddItem" asp-controller="Inventories" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="inventoryId" value="@ViewBag.InventoryId" />
+
+        @if (Model.Fields != null && Model.Fields.Any())
+        {
+            @foreach (var field in Model.Fields.OrderBy(f => f.Order))
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold">@field.Name</label>
+                    <small class="text-muted d-block">@field.Description</small>
+
+                    @switch (field.Type)
+                    {
+                        case CourseWork.Models.FieldType.TextSingle:
+                            <input type="text" name="Field_@field.Id" class="form-control" />
+                            break;
+                        case CourseWork.Models.FieldType.TextMulti:
+                            <textarea name="Field_@field.Id" class="form-control" rows="3"></textarea>
+                            break;
+                        case CourseWork.Models.FieldType.Number:
+                            <input type="number" name="Field_@field.Id" class="form-control" step="any" />
+                            break;
+                        case CourseWork.Models.FieldType.ImageLink:
+                            <input type="url" name="Field_@field.Id" class="form-control" placeholder="URL изображения или документа" />
+                            break;
+                        case CourseWork.Models.FieldType.Boolean:
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="Field_@field.Id" id="Field_@field.Id" />
+                                <label class="form-check-label" for="Field_@field.Id">Да / Нет</label>
+                            </div>
+                            break;
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">Для этого инвентаря ещё не добавлены пользовательские поля.</p>
+        }
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">💾 Добавить элемент</button>
+            <a asp-action="Details" asp-controller="Inventories" asp-route-id="@ViewBag.InventoryId" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
