@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Копируем файл проекта и восстанавливаем зависимости
-COPY CourseWork/CourseWork/CourseWork.csproj ./task5/
+COPY CourseWork/CourseWork/CourseWork.csproj ./CourseWork/
 RUN dotnet restore ./CourseWork/CourseWork.csproj
 
 # Копируем остальной код проекта
@@ -45,4 +45,4 @@ ENV DOTNET_SYSTEM_NET_MAIL_SMTPSERVER=smtp.gmail.com
 ENV DOTNET_SYSTEM_NET_MAIL_SMTPPORT=587
 
 # Запуск
-ENTRYPOINT ["dotnet", "task5.dll"]
+ENTRYPOINT ["dotnet", "CourseWork.dll"]
