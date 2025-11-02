@@ -13,12 +13,13 @@ namespace CourseWork.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-
-        public RegistrationController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole<Guid>> roleManager)
+        private readonly ILogger<RegistrationController> _logger;
+        public RegistrationController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole<Guid>> roleManager, ILogger<RegistrationController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -70,7 +71,9 @@ namespace CourseWork.Controllers
         [HttpPost]
         public IActionResult ExternalLogin(string provider)
         {
+            Console.WriteLine($"ExternalLogin called with provider: {provider}");
             var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Registration");
+            Console.WriteLine($"RedirectUrl: {redirectUrl}");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
@@ -79,15 +82,37 @@ namespace CourseWork.Controllers
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
+            {
+                _logger.LogWarning("ExternalLoginCallback: External login info is null.");
                 return RedirectToAction(nameof(Login));
+            }
+
+            _logger.LogInformation("ExternalLoginCallback: Provider = {Provider}, ProviderKey = {ProviderKey}",
+                info.LoginProvider, info.ProviderKey);
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
             if (result.Succeeded)
+            {
+                _logger.LogInformation("ExternalLoginCallback: External login succeeded for user {UserName}.",
+                    info.Principal.Identity?.Name ?? "Unknown");
                 return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                _logger.LogWarning("ExternalLoginCallback: External login sign-in failed.");
+                if (result.IsLockedOut) _logger.LogWarning("ExternalLoginCallback: User is locked out.");
+                if (result.IsNotAllowed) _logger.LogWarning("ExternalLoginCallback: User is not allowed to sign in.");
+                if (result.RequiresTwoFactor) _logger.LogWarning("ExternalLoginCallback: Two-factor authentication required.");
+            }
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            _logger.LogInformation("ExternalLoginCallback: External login email = {Email}", email);
+
             if (email == null)
-                return RedirectToAction(nameof(Login)); // Если email не найден, возвращаем на логин
+            {
+                _logger.LogWarning("ExternalLoginCallback: Email claim not found in external login info.");
+                return RedirectToAction(nameof(Login));
+            }
 
             var user = new User
             {
@@ -98,32 +123,74 @@ namespace CourseWork.Controllers
             };
 
             var createResult = await _userManager.CreateAsync(user);
-            if (createResult.Succeeded)
+            if (!createResult.Succeeded)
             {
-                await _userManager.AddLoginAsync(user, info);
-
-                // Добавляем роль "User", если её ещё нет
-                if (!await _roleManager.RoleExistsAsync("User"))
+                foreach (var error in createResult.Errors)
                 {
-                    var role = new IdentityRole<Guid>
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "User",
-                        NormalizedName = "USER"
-                    };
-                    await _roleManager.CreateAsync(role);
+                    _logger.LogError("ExternalLoginCallback: User creation error - {Description}", error.Description);
                 }
-                await _userManager.AddToRoleAsync(user, "User");
 
-                await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Не удалось создать пользователя через внешний провайдер.");
+                return View("Login");
             }
 
-            // Если не удалось создать пользователя — возвращаем на страницу логина с ошибкой
-            ModelState.AddModelError("", "Не удалось создать пользователя через внешний провайдер.");
-            return View("Login");
-        }
+            _logger.LogInformation("ExternalLoginCallback: User {Email} created successfully.", email);
 
+            var addLoginResult = await _userManager.AddLoginAsync(user, info);
+            if (!addLoginResult.Succeeded)
+            {
+                foreach (var error in addLoginResult.Errors)
+                {
+                    _logger.LogError("ExternalLoginCallback: AddLoginAsync error - {Description}", error.Description);
+                }
+
+                ModelState.AddModelError("", "Не удалось привязать внешний логин к пользователю.");
+                return View("Login");
+            }
+
+            _logger.LogInformation("ExternalLoginCallback: External login linked to user {Email}.", email);
+
+            // Добавляем роль "User", если её ещё нет
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                var role = new IdentityRole<Guid>
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "User",
+                    NormalizedName = "USER"
+                };
+                var roleResult = await _roleManager.CreateAsync(role);
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        _logger.LogError("ExternalLoginCallback: Role creation error - {Description}", error.Description);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("ExternalLoginCallback: Role 'User' created successfully.");
+                }
+            }
+
+            var addRoleResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!addRoleResult.Succeeded)
+            {
+                foreach (var error in addRoleResult.Errors)
+                {
+                    _logger.LogError("ExternalLoginCallback: AddToRoleAsync error - {Description}", error.Description);
+                }
+            }
+            else
+            {
+                _logger.LogInformation("ExternalLoginCallback: User {Email} added to role 'User'.", email);
+            }
+
+            await _signInManager.SignInAsync(user, false);
+            _logger.LogInformation("ExternalLoginCallback: User {Email} signed in successfully.", email);
+
+            return RedirectToAction("Index", "Home");
+        }
 
 
         [HttpPost]

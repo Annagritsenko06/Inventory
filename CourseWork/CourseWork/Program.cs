@@ -25,13 +25,15 @@ builder.Services.AddAuthentication(options =>
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    googleOptions.CallbackPath = "/Home/Index";
+    googleOptions.Scope.Add("email");
+    googleOptions.Scope.Add("profile");
+    googleOptions.CallbackPath = "/Registration/ExternalLoginCallback";
 })
 .AddFacebook(facebookOptions =>
 {
     facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
     facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-    facebookOptions.CallbackPath = "/Home/Index"; 
+    facebookOptions.CallbackPath = "/Registration/ExternalLoginCallback"; 
 });
 
 
@@ -124,9 +126,12 @@ using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    var registrationController = new RegistrationController(userManager, null, roleManager);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<RegistrationController>>();
+
+    var registrationController = new RegistrationController(userManager, null, roleManager, logger);
     await registrationController.EnsureAdminExists();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
