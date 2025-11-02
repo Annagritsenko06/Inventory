@@ -25,12 +25,15 @@ builder.Services.AddAuthentication(options =>
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    googleOptions.CallbackPath = "/Home/Index";
 })
 .AddFacebook(facebookOptions =>
 {
     facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
     facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+    facebookOptions.CallbackPath = "/Home/Index"; 
 });
+
 
 // ---------------- HTTPS ----------------
 builder.Services.AddHttpsRedirection(options =>

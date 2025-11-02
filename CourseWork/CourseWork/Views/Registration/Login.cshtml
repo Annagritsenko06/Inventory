@@ -57,7 +57,7 @@
 
                 <div class="row g-2 text-center">
                     <div class="col-6">
-                        <form asp-action="ExternalLogin" method="post">
+                        <form asp-controller="Registration asp-action="ExternalLogin" method="post">
                             <input type="hidden" name="provider" value="Google" />
                             <button type="submit" class="btn btn-danger w-100 py-2">
                                 <i class="bi bi-google me-2"></i> Google
@@ -65,7 +65,7 @@
                         </form>
                     </div>
                     <div class="col-6">
-                        <form asp-action="ExternalLogin" method="post">
+                        <form asp-controller="Registration asp-action="ExternalLogin" method="post">
                             <input type="hidden" name="provider" value="Facebook" />
                             <button type="submit" class="btn btn-primary w-100 py-2">
                                 <i class="bi bi-facebook me-2"></i> Facebook

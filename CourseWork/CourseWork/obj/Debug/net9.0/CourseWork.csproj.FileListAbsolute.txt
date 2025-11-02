@@ -1055,3 +1055,4 @@ D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.pdb
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.genruntimeconfig.cache
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\ref\CourseWork.dll
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.sourcelink.json
