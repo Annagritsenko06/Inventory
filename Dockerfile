@@ -5,14 +5,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Копируем файл проекта и восстанавливаем зависимости
-COPY task5/task5/task5.csproj ./task5/
-RUN dotnet restore ./task5/task5.csproj
+COPY CourseWork/CourseWork/CourseWork.csproj ./task5/
+RUN dotnet restore ./CourseWork/CourseWork.csproj
 
 # Копируем остальной код проекта
-COPY task5/task5 ./task5
+COPY CourseWork/CourseWork ./CourseWork
 
 # Собираем проект в Release
-RUN dotnet publish ./task5/task5.csproj -c Release -o /app
+RUN dotnet publish ./CourseWork/CourseWork.csproj -c Release -o /app
 
 # 2. Финальный контейнер
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -25,14 +25,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Копируем файл проекта и восстанавливаем зависимости
-COPY task5/task5/task5.csproj ./task5/
-RUN dotnet restore ./task5/task5.csproj
+COPY CourseWork/CourseWork/CourseWork.csproj ./CourseWork/
+RUN dotnet restore ./CourseWork/CourseWork.csproj
 
 # Копируем остальной код проекта
-COPY task5/task5 ./task5
+COPY CourseWork/CourseWork ./CourseWork
 
 # Собираем проект в Release
-RUN dotnet publish ./task5/task5.csproj -c Release -o /app
+RUN dotnet publish ./CourseWork/CourseWork.csproj -c Release -o /app
 
 # 2. Финальный контейнер
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
