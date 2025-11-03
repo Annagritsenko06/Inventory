@@ -64,10 +64,12 @@ namespace CourseWork.Controllers
 
         //    return View();
         //}
-
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password)
         {
+            // Гарантируем, что админ существует
+            await EnsureAdminExists();
+
             var user = new User
             {
                 UserName = email,
@@ -100,9 +102,7 @@ namespace CourseWork.Controllers
                         ModelState.AddModelError("", $"Ошибка при добавлении роли: {err.Description}");
                 }
 
-                // Перезаходим, чтобы применились клеймы с ролью
                 await _signInManager.SignInAsync(user, isPersistent: false);
-
                 return RedirectToAction("Index", "Home");
             }
 
@@ -111,6 +111,7 @@ namespace CourseWork.Controllers
 
             return View();
         }
+
 
         // === Внешние провайдеры ===
 
@@ -126,6 +127,9 @@ namespace CourseWork.Controllers
         [HttpGet]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
+            // ✅ 1. Проверяем и при необходимости создаём системного админа
+            await EnsureAdminExists();
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
@@ -133,14 +137,40 @@ namespace CourseWork.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            // ✅ 2. Если у пользователя уже есть связка с этим внешним провайдером — просто логиним
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
             if (result.Succeeded)
+            {
+                _logger.LogInformation("ExternalLoginCallback: пользователь успешно вошёл через {Provider}", info.LoginProvider);
                 return RedirectToAction("Index", "Home");
+            }
 
+            // ✅ 3. Получаем email из внешней учётки
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             if (email == null)
+            {
+                _logger.LogWarning("ExternalLoginCallback: Email отсутствует в данных провайдера");
                 return RedirectToAction(nameof(Login));
+            }
 
+            // ✅ 4. Проверяем, есть ли пользователь с таким email
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                // Добавляем привязку Google/Facebook, если её ещё нет
+                var logins = await _userManager.GetLoginsAsync(existingUser);
+                if (!logins.Any(l => l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey))
+                {
+                    await _userManager.AddLoginAsync(existingUser, info);
+                }
+
+                // Просто логиним его
+                await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                _logger.LogInformation("ExternalLoginCallback: существующий пользователь {Email} вошёл через {Provider}.", email, info.LoginProvider);
+                return RedirectToAction("Index", "Home");
+            }
+
+            // ✅ 5. Если пользователя нет — создаём нового
             var user = new User
             {
                 UserName = email,
@@ -151,50 +181,26 @@ namespace CourseWork.Controllers
 
             var createResult = await _userManager.CreateAsync(user);
             if (!createResult.Succeeded)
+            {
+                foreach (var error in createResult.Errors)
+                    _logger.LogError("ExternalLoginCallback: ошибка при создании пользователя: {Description}", error.Description);
                 return View("Login");
+            }
 
             await _userManager.AddLoginAsync(user, info);
 
-            // === Назначаем роль ===
-            string adminEmail = "angritsen@gmail.com";
-
-            // Проверяем, есть ли роль Admin, если нет — создаём
-            if (!await _roleManager.RoleExistsAsync("Admin"))
-            {
-                var adminRole = new IdentityRole<Guid>
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Admin",
-                    NormalizedName = "ADMIN"
-                };
-                await _roleManager.CreateAsync(adminRole);
-            }
-
-            // Проверяем, есть ли роль User, если нет — создаём
+            // ✅ 6. Создаём только роль "User" (роль "Admin" уже гарантирована EnsureAdminExists)
             if (!await _roleManager.RoleExistsAsync("User"))
             {
-                var userRole = new IdentityRole<Guid>
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "User",
-                    NormalizedName = "USER"
-                };
-                await _roleManager.CreateAsync(userRole);
+                await _roleManager.CreateAsync(new IdentityRole<Guid> { Name = "User", NormalizedName = "USER" });
             }
 
-            // Если email совпадает с adminEmail — назначаем роль Admin
-            if (email.Equals(adminEmail, StringComparison.OrdinalIgnoreCase))
-            {
-                await _userManager.AddToRoleAsync(user, "Admin");
-                _logger.LogInformation("ExternalLoginCallback: {Email} назначен как администратор.", email);
-            }
-            else
-            {
-                await _userManager.AddToRoleAsync(user, "User");
-                _logger.LogInformation("ExternalLoginCallback: {Email} назначен как пользователь.", email);
-            }
+            await _userManager.AddToRoleAsync(user, "User");
 
+            // ✅ 7. Входим под новым пользователем
             await _signInManager.SignInAsync(user, false);
+            _logger.LogInformation("ExternalLoginCallback: новый пользователь {Email} вошёл через {Provider}.", email, info.LoginProvider);
+
             return RedirectToAction("Index", "Home");
         }
 
