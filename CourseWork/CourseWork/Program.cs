@@ -202,18 +202,20 @@ builder.Services.AddAuthentication(options =>
 // ---------------- Cookie Settings ----------------
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.Name = "Identity.Application";
+    options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
 });
 
+
 // ---------------- Data Protection ----------------
-var keysFolder = Path.Combine("/render-data", "DataProtectionKeys");
+var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
 Directory.CreateDirectory(keysFolder);
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
-    .SetApplicationName("InventoryApp")
-    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+    .SetApplicationName("InventoryApp");
 // Проверка, что папка для ключей существует и доступна для записи
 if (!Directory.Exists(keysFolder))
 {
