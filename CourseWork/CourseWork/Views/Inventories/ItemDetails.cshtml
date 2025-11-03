@@ -6,7 +6,7 @@
     bool isEdit = (bool)(ViewData["IsEdit"] ?? false);
 }
 
-<h2>@(isEdit ? "✏️ " + @L["Edit_item"] : "👁 " + @L["View_item"])</h2>
+<h2>@(isEdit ? "✏️ " + @L["Edit_item"].Value  : "👁 " + @L["View_item"].Value)</h2>
 
 <form asp-action="SaveItem" method="post">
     @Html.AntiForgeryToken()
