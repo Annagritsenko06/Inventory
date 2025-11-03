@@ -39,23 +39,70 @@ namespace CourseWork.Controllers
         [HttpGet]
         public IActionResult Register() => View();
 
+        //[HttpPost]
+        //public async Task<IActionResult> Register(string email, string password)
+        //{
+        //    // Создаем пользователя и сразу заполняем доп. поля
+        //    var user = new User
+        //    {
+        //        UserName = email,
+        //        Email = email,
+        //        Status = "Active", // можно задать значение по умолчанию
+        //        RegistrationTime = DateTime.UtcNow // сохраняем время регистрации
+        //    };
+
+        //    var result = await _userManager.CreateAsync(user, password);
+
+        //    if (result.Succeeded)
+        //    {
+        //        await _signInManager.SignInAsync(user, false);
+        //        return RedirectToAction("Index", "Home");
+        //    }
+
+        //    foreach (var error in result.Errors)
+        //        ModelState.AddModelError("", error.Description);
+
+        //    return View();
+        //}
+
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password)
         {
-            // Создаем пользователя и сразу заполняем доп. поля
             var user = new User
             {
                 UserName = email,
                 Email = email,
-                Status = "Active", // можно задать значение по умолчанию
-                RegistrationTime = DateTime.UtcNow // сохраняем время регистрации
+                Status = "Active",
+                RegistrationTime = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, false);
+                // Проверяем, есть ли роль "User"
+                if (!await _roleManager.RoleExistsAsync("User"))
+                {
+                    var role = new IdentityRole<Guid>
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "User",
+                        NormalizedName = "USER"
+                    };
+                    await _roleManager.CreateAsync(role);
+                }
+
+                // Добавляем пользователю роль
+                var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var err in roleResult.Errors)
+                        ModelState.AddModelError("", $"Ошибка при добавлении роли: {err.Description}");
+                }
+
+                // Перезаходим, чтобы применились клеймы с ролью
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -64,7 +111,6 @@ namespace CourseWork.Controllers
 
             return View();
         }
-
 
         // === Внешние провайдеры ===
 

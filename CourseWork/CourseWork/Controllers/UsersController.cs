@@ -205,10 +205,24 @@ namespace task5.Controllers
                 if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
                 {
                     await _userManager.RemoveFromRoleAsync(user, "Admin");
+
                     if (!await _userManager.IsInRoleAsync(user, "User"))
                     {
+
+                        if (!await _roleManager.RoleExistsAsync("User"))
+                        {
+                            var role = new IdentityRole<Guid>
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = "User",
+                                NormalizedName = "USER"
+                            };
+                            var roleResult = await _roleManager.CreateAsync(role);
+                            await _userManager.AddToRoleAsync(user, "User");
+                        }
                         await _userManager.AddToRoleAsync(user, "User");
                     }
+                   
 
                     // Если это текущий пользователь — обновляем куки
                     if (user.Id.ToString() == _userManager.GetUserId(User))

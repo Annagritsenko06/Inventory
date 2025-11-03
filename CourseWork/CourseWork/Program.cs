@@ -11,8 +11,9 @@ using CourseWork.Controllers;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor; 
 using System.Globalization;
-
+using Microsoft.AspNetCore.HttpOverrides;
 var builder = WebApplication.CreateBuilder(args);
+
 
 // ---------------- AUTH ----------------
 builder.Services.AddAuthentication(options =>
@@ -25,9 +26,9 @@ builder.Services.AddAuthentication(options =>
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-    googleOptions.Scope.Add("email");
-    googleOptions.Scope.Add("profile");
+
     googleOptions.CallbackPath = "/Registration/ExternalLoginCallback";
+    googleOptions.SaveTokens = true;
 })
 .AddFacebook(facebookOptions =>
 {
@@ -141,6 +142,11 @@ var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOpt
 app.UseRequestLocalization(locOptions);
 
 app.UseRouting();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
