@@ -21,59 +21,7 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     
-    <script>
-        // Language and Theme Management
-        function setLanguage(culture) {
-            fetch('/Settings/SetLanguage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                },
-                body: JSON.stringify(culture)
-            }).then(() => {
-                location.reload();
-            });
-        }
-
-        function setTheme(theme) {
-            fetch('/Settings/SetTheme', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                },
-                body: JSON.stringify(theme)
-            }).then(() => {
-                applyTheme(theme);
-            });
-        }
-
-        function applyTheme(theme) {
-            const html = document.getElementById('html-root');
-            if (theme === 'dark') {
-                html.classList.add('dark-theme');
-                html.classList.remove('light-theme');
-            } else {
-                html.classList.add('light-theme');
-                html.classList.remove('dark-theme');
-            }
-        }
-
-        // Load current settings on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/Settings/GetCurrentSettings')
-                .then(response => response.json())
-                .then(settings => {
-                    applyTheme(settings.theme);
-                })
-                .catch(error => {
-                    console.error('Error loading settings:', error);
-                    // Default to light theme if settings fail to load
-                    applyTheme('light');
-                });
-        });
-    </script>
+ 
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>
