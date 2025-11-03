@@ -1,9 +1,12 @@
-﻿@model CourseWork.Models.InventoryItemViewModel
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model CourseWork.Models.InventoryItemViewModel
+@inject IViewLocalizer L
+
 @{
     bool isEdit = (bool)(ViewData["IsEdit"] ?? false);
 }
 
-<h2>@(isEdit ? "✏️ Редактирование элемента" : "👁 Просмотр элемента")</h2>
+<h2>@(isEdit ? "✏️ " + @L["Edit_item"] : "👁 " + @L["View_item"])</h2>
 
 <form asp-action="SaveItem" method="post">
     @Html.AntiForgeryToken()
@@ -15,26 +18,25 @@
                class="form-control" @(isEdit ? "" : "readonly") />
     </div>
 
-    <h5>Поля</h5>
+    <h5>@L["Fields"]</h5>
     <hr />
 
     @for (int i = 0; i < Model.FieldValues.Count; i++)
     {
         <div class="mb-3">
-            <label class="form-label fw-bold">Поле @(i + 1)</label>
+            <label class="form-label fw-bold">@L["Field"] @(i + 1)</label>
             <input type="text" name="FieldValues[@(i)]" value="@Model.FieldValues[i]"
                    class="form-control" @(isEdit ? "" : "readonly") />
         </div>
     }
 
-
     @if (isEdit)
     {
-        <button type="submit" class="btn btn-success mt-3">💾 Сохранить изменения</button>
+        <button type="submit" class="btn btn-success mt-3">💾 @L["Save_changes"]</button>
     }
     else
     {
         <a asp-action="ItemDetails" asp-route-id="@Model.Id" asp-route-isEdit="true"
-           class="btn btn-outline-primary mt-3">✏️ Редактировать</a>
+           class="btn btn-outline-primary mt-3">✏️ @L["Edit"]</a>
     }
 </form>

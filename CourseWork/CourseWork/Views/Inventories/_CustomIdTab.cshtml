@@ -1,72 +1,74 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @model CourseWork.Models.InventoryWithItemsViewModel
+@inject IViewLocalizer L
 
 <div class="mb-3">
-    <h5>Пользовательские ID</h5>
+    <h5>@L["Custom_IDs"]</h5>
     <p class="text-muted">
-        Настройте формат пользовательских ID для элементов этого инвентаря.
-        ID будут генерироваться автоматически при создании элементов.
+        @L["Configure_custom_id_format"]<br />
+        @L["IDs_generated_automatically"]
     </p>
 
     <div class="row">
         <div class="col-md-8">
             <div id="customIdBuilder" class="border rounded p-3 mb-3" style="min-height: 200px;">
                 <div class="text-muted text-center py-4">
-                    Перетащите элементы сюда для создания формата ID
+                    @L["Drag_items_here"]
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <h6>Доступные элементы:</h6>
+            <h6>@L["Available_elements"]</h6>
             <div class="list-group" id="availableParts">
                 <div class="list-group-item draggable-part" data-type="0">
-                    <strong>Фиксированный текст</strong>
-                    <small class="d-block text-muted">Произвольный текст</small>
+                    <strong>@L["Fixed_text"]</strong>
+                    <small class="d-block text-muted">@L["Custom_text"]</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="1">
-                    <strong>20-битное число</strong>
-                    <small class="d-block text-muted">Случайное число (0-1048575)</small>
+                    <strong>@L["Number_20bit"]</strong>
+                    <small class="d-block text-muted">@L["Random_number_20bit"]</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="2">
-                    <strong>32-битное число</strong>
-                    <small class="d-block text-muted">Случайное число (0-4294967295)</small>
+                    <strong>@L["Number_32bit"]</strong>
+                    <small class="d-block text-muted">@L["Random_number_32bit"]</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="3">
-                    <strong>6-значное число</strong>
-                    <small class="d-block text-muted">000000-999999</small>
+                    <strong>@L["Number_6digit"]</strong>
+                    <small class="d-block text-muted">000000–999999</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="4">
-                    <strong>9-значное число</strong>
-                    <small class="d-block text-muted">000000000-999999999</small>
+                    <strong>@L["Number_9digit"]</strong>
+                    <small class="d-block text-muted">000000000–999999999</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="5">
-                    <strong>GUID</strong>
-                    <small class="d-block text-muted">Уникальный идентификатор</small>
+                    <strong>@L["GUID"]</strong>
+                    <small class="d-block text-muted">@L["Unique_identifier"]</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="6">
-                    <strong>Дата/время</strong>
-                    <small class="d-block text-muted">Дата создания элемента</small>
+                    <strong>@L["DateTime"]</strong>
+                    <small class="d-block text-muted">@L["Item_creation_date"]</small>
                 </div>
                 <div class="list-group-item draggable-part" data-type="7">
-                    <strong>Последовательность</strong>
-                    <small class="d-block text-muted">1, 2, 3, ...</small>
+                    <strong>@L["Sequence"]</strong>
+                    <small class="d-block text-muted">@L["Sequence_example"]</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-md-8">
-            <h6>Предварительный просмотр:</h6>
+            <h6>@L["Preview"]</h6>
             <div class="alert alert-info">
-                <strong>Пример ID:</strong> <span id="previewId">ITEM_0001</span>
+                <strong>@L["Example_ID"]</strong> <span id="previewId">ITEM_0001</span>
             </div>
         </div>
         <div class="col-md-4">
             <button type="button" class="btn btn-success" onclick="saveCustomIdFormat()">
-                Сохранить формат
+                @L["Save_format"]
             </button>
             <button type="button" class="btn btn-secondary" onclick="clearCustomIdFormat()">
-                Очистить
+                @L["Clear"]
             </button>
         </div>
     </div>

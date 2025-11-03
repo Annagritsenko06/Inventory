@@ -1,10 +1,20 @@
-﻿@model CourseWork.Models.InventoryField
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model CourseWork.Models.InventoryField
+@inject IViewLocalizer L
 @{
     bool isEdit = (bool)(ViewData["IsEdit"] ?? false);
-    string[] fieldTypes = { "Однострочный текст", "Многострочный текст", "Число", "Ссылка", "Да/Нет" };
+   
+    string[] fieldTypes = { 
+        L["SingleLineText"].Value, 
+        L["MultiLineText"].Value, 
+        L["Number"].Value, 
+        L["Link"].Value, 
+        L["YesNo"].Value 
+    };
 }
 
-<h2>@(isEdit ? "✏️ Редактирование поля" : "👁 Просмотр поля")</h2>
+<h2>@(isEdit ? "✏️ " + L["Edit_field"].Value : "👁 " + L["View_field"].Value)</h2>
+
 
 <form asp-action="SaveFieldDetails" method="post">
     @Html.AntiForgeryToken()
@@ -12,49 +22,44 @@
     <input type="hidden" name="InventoryId" value="@Model.InventoryId" />
 
     <div class="mb-3">
-        <label class="form-label fw-bold">Название</label>
+        <label class="form-label fw-bold">@L["Name"]</label>
         <input type="text" name="Name" value="@Model.Name" class="form-control" @(isEdit ? "" : "readonly") />
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-bold">Описание</label>
+        <label class="form-label fw-bold">@L["Description"]</label>
         <textarea name="Description" class="form-control" rows="3" @(isEdit ? "" : "readonly")>@Model.Description</textarea>
     </div>
 
-  
-    @{
-        var fieldTypes = new[] { "Однострочный текст", "Многострочный текст", "Число", "Ссылка", "Да/Нет" };
-    }
-
-<select name="Type" class="form-select" @(isEdit ? "" : "disabled")>
-        @for (int i = 0; i < fieldTypes.Length; i++)
-        {
-            if (Model.Type == (CourseWork.Models.FieldType)i)
+    <div class="mb-3">
+        <label class="form-label fw-bold">Type</label>
+        <select name="Type" class="form-select" @(isEdit ? "" : "disabled")>
+            @for (int i = 0; i < fieldTypes.Length; i++)
             {
+                if (Model.Type == (CourseWork.Models.FieldType)i)
+                {
                     <option value="@i" selected>@fieldTypes[i]</option>
-            }
-            else
-            {
+                }
+                else
+                {
                     <option value="@i">@fieldTypes[i]</option>
+                }
             }
-        }
-</select>
-
-
-
+        </select>
+    </div>
 
     <div class="form-check mb-3">
         <input type="checkbox" name="ShowInTable" class="form-check-input" value="true" @(Model.ShowInTable ? "checked" : "") @(isEdit ? "" : "disabled") />
-        <label class="form-check-label">Отображать в таблице</label>
+        <label class="form-check-label">@L["Show_in_table"]</label>
     </div>
 
     @if (isEdit)
     {
-        <button type="submit" class="btn btn-success mt-3">💾 Сохранить изменения</button>
+        <button type="submit" class="btn btn-success mt-3">💾 @L["Save_changes"]</button>
     }
     else
     {
         <a asp-action="FieldDetails" asp-route-id="@Model.Id" asp-route-isEdit="true"
-           class="btn btn-outline-primary mt-3">✏️ Редактировать</a>
+           class="btn btn-outline-primary mt-3">✏️ @L["Edit"]</a>
     }
 </form>

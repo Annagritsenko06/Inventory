@@ -1058,3 +1058,11 @@ D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.sourcelink.json
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.Index.en.resources
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.Index.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._CustomIdTab.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._CustomIdTab.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.ItemDetails.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.ItemDetails.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.FieldDetails.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.FieldDetails.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.AddItem.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories.AddItem.ru.resources
