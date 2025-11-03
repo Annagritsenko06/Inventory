@@ -196,7 +196,7 @@ builder.Services.AddAuthentication(options =>
 {
     facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
     facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-    facebookOptions.CallbackPath = "/Registration/ExternalLoginCallback";
+    facebookOptions.CallbackPath = "/signin-facebook";
 });
 
 // ---------------- Cookie Settings ----------------
@@ -311,7 +311,14 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsync("Произошла ошибка аутентификации. Попробуйте снова.");
+    });
+});
 // 1️⃣ Forwarded Headers - до всего, чтобы HTTPS и Scheme корректно работали
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

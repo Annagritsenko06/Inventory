@@ -126,6 +126,7 @@ namespace CourseWork.Controllers
         [HttpGet]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
