@@ -207,13 +207,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // ---------------- Data Protection ----------------
-var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
+var keysFolder = Path.Combine("/render-data", "DataProtectionKeys");
 Directory.CreateDirectory(keysFolder);
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
     .SetApplicationName("InventoryApp")
     .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
 
 // ---------------- HTTPS ----------------
 builder.Services.AddHttpsRedirection(options =>
