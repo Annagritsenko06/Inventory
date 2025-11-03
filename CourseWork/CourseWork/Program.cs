@@ -214,6 +214,27 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
     .SetApplicationName("InventoryApp")
     .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+// Проверка, что папка для ключей существует и доступна для записи
+if (!Directory.Exists(keysFolder))
+{
+    Console.WriteLine($"[ERROR] Папка для ключей не существует: {keysFolder}");
+}
+else
+{
+    Console.WriteLine($"[OK] Папка для ключей существует: {keysFolder}");
+
+    try
+    {
+        var testFile = Path.Combine(keysFolder, "test.txt");
+        File.WriteAllText(testFile, "test");
+        File.Delete(testFile);
+        Console.WriteLine("[OK] Папка доступна для записи");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] Папка недоступна для записи: {ex.Message}");
+    }
+}
 
 
 // ---------------- HTTPS ----------------
