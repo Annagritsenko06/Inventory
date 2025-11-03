@@ -162,19 +162,19 @@
 //app.Run();
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.DataProtection;
-using CourseWork.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using CourseWork.Models;
 using Microsoft.Extensions.Options;
-using CourseWork.Controllers;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Globalization;
 using System.IO;
+using CourseWork.Models;
+using CourseWork.Services;
+using CourseWork.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -207,7 +207,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // ---------------- Data Protection ----------------
-// Хранение ключей на файловой системе Render, чтобы куки и антифорга токены работали стабильно
 var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
 Directory.CreateDirectory(keysFolder);
 
@@ -230,7 +229,7 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(60);
 });
 
-// ---------------- MVC + Localizer ----------------
+// ---------------- MVC + Localization ----------------
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization()
@@ -270,7 +269,6 @@ builder.Services.AddSignalR();
 
 // ---------------- Localization ----------------
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[] { "en-US", "ru-RU" };
@@ -290,7 +288,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Forwarded headers должны идти как можно раньше
+// 1️⃣ Forwarded Headers - до всего, чтобы HTTPS и Scheme корректно работали
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
@@ -301,15 +299,18 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Локализация
+// 2️⃣ Localization
 var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(locOptions);
 
 app.UseRouting();
 
+// 3️⃣ Session перед Authentication
+app.UseSession();
+
+// 4️⃣ Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 
 // ---------------- Ensure Admin ----------------
 using (var scope = app.Services.CreateScope())
