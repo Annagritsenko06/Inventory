@@ -161,6 +161,7 @@
 
 //app.Run();
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.DataProtection;
 using CourseWork.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -173,6 +174,7 @@ using CourseWork.Controllers;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Globalization;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -197,12 +199,22 @@ builder.Services.AddAuthentication(options =>
     facebookOptions.CallbackPath = "/Registration/ExternalLoginCallback";
 });
 
-// Настройка куки для работы через HTTPS и прокси
+// ---------------- Cookie Settings ----------------
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.None;
 });
+
+// ---------------- Data Protection ----------------
+// Хранение ключей на файловой системе Render, чтобы куки и антифорга токены работали стабильно
+var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
+Directory.CreateDirectory(keysFolder);
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+    .SetApplicationName("InventoryApp")
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
 
 // ---------------- HTTPS ----------------
 builder.Services.AddHttpsRedirection(options =>
