@@ -129,12 +129,16 @@ namespace task5.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Удаление выбранных пользователей
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Delete(List<string> selectedUsers)
         {
-            if (selectedUsers == null) return RedirectToAction(nameof(Index));
+            if (selectedUsers == null)
+                return RedirectToAction(nameof(Index));
+
+            // Получаем ID текущего пользователя
+            var currentUserId = _userManager.GetUserId(User);
+            bool deletedCurrentUser = false;
 
             foreach (var idStr in selectedUsers)
             {
@@ -142,10 +146,25 @@ namespace task5.Controllers
                 {
                     var user = await _userManager.FindByIdAsync(userId.ToString());
                     if (user != null)
-                        await _userManager.DeleteAsync(user);
+                    {
+                        var result = await _userManager.DeleteAsync(user);
+
+                        // Проверяем, удалён ли текущий пользователь
+                        if (userId.ToString() == currentUserId && result.Succeeded)
+                        {
+                            deletedCurrentUser = true;
+                        }
+                    }
                 }
             }
 
+            // Если текущий пользователь удалён, перенаправляем его на страницу Login
+            if (deletedCurrentUser)
+            {
+                return RedirectToAction("Login", "Registration");
+            }
+
+            // Иначе остаёмся на Index
             return RedirectToAction(nameof(Index));
         }
 
