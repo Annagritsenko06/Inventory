@@ -244,9 +244,16 @@
                             <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
 
                             <div class="mb-2">
-                                <label class="form-label">@L["Username_or_email"]</label>
-                                <input type="text" name="searchTerm" class="form-control" value="@Model.SearchTerm" placeholder="@L["Enter_name_or_email"]" />
+                                <label class="form-label">@L["Select_user_to_add"]</label>
+                                <select name="userId" class="form-select" required>
+                                    <option value="">@L["Choose_user"]...</option>
+                                    @foreach (var user in Model.UsersWithoutAccess)
+                                    {
+                                        <option value="@user.Id">@user.UserName (@user.Email)</option>
+                                    }
+                                </select>
                             </div>
+
 
                             <button type="submit" class="btn btn-primary">@L["Add_user"]</button>
                         </form>
@@ -264,41 +271,52 @@
                            class="btn btn-sm btn-outline-secondary @(Model.SortOrder == "email" ? "active" : "")">
                             @L["Sort_by_email"]
                         </a>
+                         <button id="deleteSelectedBtn" class="btn btn-sm btn-outline-danger ms-2" disabled>
+                    <i class="fas fa-trash-alt me-1"></i>@L["Delete_selected"]
+                </button>
                     </div>
                 </div>
+                <form id="bulkDeleteForm" asp-action="RemoveUserAccessMultiple" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
 
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>@L["Name"]</th>
-                            <th>Email</th>
-                            <th style="width: 120px;">@L["Action"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.AllowedUsers != null && Model.AllowedUsers.Any())
-                        {
-                            foreach (var user in Model.AllowedUsers)
-                            {
-                                <tr>
-                                    <td>@user.UserName</td>
-                                    <td>@user.Email</td>
-                                    <td>
-                                        <form asp-action="RemoveUserAccess" method="post" class="d-inline">
-                                            <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
-                                            <input type="hidden" name="userId" value="@user.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">@L["Remove"]</button>
-                                        </form>
-                                    </td>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr class="text-muted small text-uppercase">
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" id="selectAll" class="form-check-input" />
+                                    </th>
+                                    <th>@L["Name"]</th>
+                                    <th>Email</th>
                                 </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr><td colspan="3" class="text-muted text-center">@L["No_users_with_access"]</td></tr>
-                        }
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                @if (Model.AllowedUsers != null && Model.AllowedUsers.Any())
+                                {
+                                    foreach (var user in Model.AllowedUsers)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="selectedUserIds" value="@user.Id" class="form-check-input user-checkbox" />
+                                            </td>
+                                            <td>@user.UserName</td>
+                                            <td>@user.Email</td>
+                                           
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-muted text-center">@L["No_users_with_access"]</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+
             }
         </div>
 
@@ -395,5 +413,30 @@ function toggleAll(source) {
     checkboxes.forEach(cb => cb.checked = source.checked);
 }
 
+        document.addEventListener('DOMContentLoaded', function () {
+                        const selectAll = document.getElementById('selectAll');
+                        const checkboxes = document.querySelectorAll('.user-checkbox');
+                        const deleteBtn = document.getElementById('deleteSelectedBtn');
+                        const form = document.getElementById('bulkDeleteForm');
+
+                        function updateDeleteButton() {
+                            const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                            deleteBtn.disabled = !anyChecked;
+                        }
+
+                        selectAll.addEventListener('change', function () {
+                            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                            updateDeleteButton();
+                        });
+
+                        checkboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
+
+                        deleteBtn.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            if (confirm('@L["Confirm_delete_selected_users"]')) {
+                                form.submit();
+                            }
+                        });
+                    });
     </script>
 }

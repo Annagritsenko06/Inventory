@@ -54,11 +54,17 @@
 
             <!-- Теги -->
             <div class="col-12 position-relative">
-                <label class="form-label">@L["Tags"]</label>
-                <input id="tagInput" class="form-control" placeholder="@L["TagsPlaceholder"]" />
+                <label class="form-label">Теги</label>
+                <input id="tagInput" class="form-control" placeholder="Введите тег..." />
                 <div id="tagSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
-                <small class="text-muted">@L["TagsHint"]</small>
+                <div id="selectedTags" class="mt-2 d-flex flex-wrap gap-1">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="badge bg-light text-dark border px-2 py-1">@tag.Name</span>
+                    }
+                </div>
             </div>
+
         </div>
 
         <hr class="my-4" />
@@ -100,30 +106,7 @@
 
 @section Scripts {
     <script>
-        // ----------------------------
-        //  Автодополнение тегов
-        // ----------------------------
-        document.getElementById('tagInput').addEventListener('input', async function () {
-            const query = this.value.trim();
-            const suggestionBox = document.getElementById('tagSuggestions');
-            suggestionBox.innerHTML = '';
-            if (query.length < 1) return;
-
-            const res = await fetch(`/Inventories/GetTagSuggestions?term=${encodeURIComponent(query)}`);
-            const tags = await res.json();
-
-            tags.forEach(tag => {
-                const item = document.createElement('button');
-                item.className = 'list-group-item list-group-item-action';
-                item.type = 'button';
-                item.textContent = tag;
-                item.onclick = () => {
-                    this.value = tag;
-                    suggestionBox.innerHTML = '';
-                };
-                suggestionBox.appendChild(item);
-            });
-        });
+       
 
         // ----------------------------
         //  Конструктор ID

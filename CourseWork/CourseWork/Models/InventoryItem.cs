@@ -13,6 +13,8 @@ namespace CourseWork.Models
         public string? SearchTerm { get; set; }
         public string SortOrder { get; set; } = "name";
         public List<User> AllowedUsers { get; set; }
+        public List<User> UsersWithoutAccess { get; set; }
+
     }
     public class InventoryItem
     {

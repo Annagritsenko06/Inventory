@@ -610,9 +610,9 @@ namespace InventoryManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddUserAccess(int inventoryId, string searchTerm)
+        public async Task<IActionResult> AddUserAccess(int inventoryId, Guid userId)
         {
-            Console.WriteLine($"AddUserAccess called: inventoryId={inventoryId}, searchTerm={searchTerm}");
+            Console.WriteLine($"AddUserAccess called: inventoryId={inventoryId},id пользователя= {userId} ");
 
             // Загружаем инвентарь с access_list
             var inventory = await _db.Inventories
@@ -622,14 +622,11 @@ namespace InventoryManager.Controllers
 
             if (inventory == null)
                 return NotFound();
-
-            // Находим пользователя
-            var user = await _userManager.FindByNameAsync(searchTerm)
-                       ?? await _userManager.FindByEmailAsync(searchTerm);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user == null)
             {
-                TempData["Error"] = $"Пользователь «{searchTerm}» не найден.";
+                TempData["Error"] = "Выбранный пользователь не найден.";
                 return RedirectToAction("Details", "Inventories", new { id = inventory.Id });
             }
 
@@ -658,48 +655,56 @@ namespace InventoryManager.Controllers
 
 
 
-        // ====== Удаление пользователя ======
         [HttpPost]
-        public async Task<IActionResult> RemoveUserAccess(int inventoryId, Guid userId)
+        public async Task<IActionResult> RemoveUserAccessMultiple(int inventoryId, List<Guid> selectedUserIds)
         {
-            // Загружаем inventory с access_list
-            var inventory = await _db.Inventories
-                .Include(i => i.access_list)
-                .FirstOrDefaultAsync(i => i.Id == inventoryId);
+            if (selectedUserIds == null || !selectedUserIds.Any())
+            {
+                TempData["Error"] = "Не выбраны пользователи для удаления.";
+                return RedirectToAction("Details", new { id = inventoryId });
+            }
 
-            if (inventory == null)
+            // Проверяем наличие инвентаря
+            var inventoryExists = await _db.Inventories.AnyAsync(i => i.Id == inventoryId);
+            if (!inventoryExists)
                 return NotFound();
 
-            // Находим доступ пользователя
-            var access = inventory.access_list.FirstOrDefault(a => a.user_id == userId);
-            if (access != null)
-            {
-                _db.AccessInventories.Remove(access); // удаляем запись из промежуточной таблицы
-                await _db.SaveChangesAsync();
+            // Находим все доступы, которые нужно удалить
+            var accessesToDelete = await _db.AccessInventories
+                .Where(a => a.inventory_template_id == inventoryId && selectedUserIds.Contains(a.user_id))
+                .ToListAsync();
 
-                // Можно получить имя пользователя для уведомления
-                var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
-                TempData["Success"] = user != null
-                    ? $"Пользователь {user.UserName} удалён."
-                    : "Пользователь удалён.";
+            if (accessesToDelete.Any())
+            {
+                _db.AccessInventories.RemoveRange(accessesToDelete);
+                await _db.SaveChangesAsync();
+                TempData["Success"] = $"Удалено пользователей: {accessesToDelete.Count}.";
+            }
+            else
+            {
+                TempData["Warning"] = "Выбранные пользователи не найдены в списке доступа.";
             }
 
             return RedirectToAction("Details", new { id = inventoryId });
         }
 
 
-
-
         [HttpGet]
-        public IActionResult GetTagSuggestions(string term)
+        public async Task<IActionResult> GetTagSuggestions(string term)
         {
-            var tags = _db.InventoryTags
-                .Where(t => t.Name.ToLower().StartsWith(term.ToLower()))
+            if (string.IsNullOrWhiteSpace(term)) return Json(new List<string>());
+
+            // Берем все теги, имена которых начинаются с term
+            var tags = await _db.InventoryTags
+                .Where(t => t.Name.StartsWith(term))
                 .Select(t => t.Name)
+                .Distinct()
                 .Take(10)
-                .ToList();
+                .ToListAsync();
+
             return Json(tags);
         }
+
 
         //public IActionResult SaveField(InventoryFieldsVM model)
         //{
@@ -1102,7 +1107,7 @@ namespace InventoryManager.Controllers
 
             if (inventory == null) return NotFound();
 
-            // Формируем список AllowedUsers через access_list
+            
             var allowedUsers = inventory.access_list
                 .Select(a => a.user)
                 .AsQueryable();
@@ -1112,6 +1117,11 @@ namespace InventoryManager.Controllers
                 "email" => allowedUsers.OrderBy(u => u.Email),
                 _ => allowedUsers.OrderBy(u => u.UserName)
             };
+            var allowedUserIds = inventory.access_list.Select(a => a.user_id).ToList();
+            var usersWithoutAccess = await _db.Users
+       .Where(u => !allowedUserIds.Contains(u.Id) && u.Id != inventory.OwnerId)
+       .OrderBy(u => u.UserName)
+       .ToListAsync();
 
             var fieldsVM = new InventoryFieldsVM
             {
@@ -1153,7 +1163,8 @@ namespace InventoryManager.Controllers
                 }).ToList(),
                 Fields = fieldsVM,
                 SortOrder = sortOrder,
-                AllowedUsers = allowedUsers.ToList() // передаем в ViewModel
+                AllowedUsers = allowedUsers.ToList(),
+                 UsersWithoutAccess = usersWithoutAccess
             };
 
             return View(viewModel);

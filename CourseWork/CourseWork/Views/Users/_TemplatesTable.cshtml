@@ -134,7 +134,7 @@ else
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th><input type="checkbox" id="selectAll" class="form-check-input" /></th>
                         <th scope="col" class="sortable" onclick="sortTable(this, 1)">Название ↑↓</th>
                         <th scope="col" class="sortable" onclick="sortTable(this, 2)">Описание ↑↓</th>
                         <th scope="col" class="sortable" onclick="sortTable(this, 3)">Категория ↑↓</th>
@@ -146,7 +146,7 @@ else
                     {
                         <tr>
                             <td>
-                                <input type="checkbox" name="selectedIds" value="@inv.Id" />
+                                <input type="checkbox" name="selectedIds" value="@inv.Id" class="row-checkbox" />
                             </td>
                             <td>
                                 <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id" class="fw-bold text-decoration-none">
@@ -175,10 +175,22 @@ else
 
 @section Scripts {
     <script>
-        // Выбор всех чекбоксов
-        document.getElementById("selectAll")?.addEventListener("change", function() {
-            const checkboxes = document.querySelectorAll('input[name="selectedIds"]');
-            checkboxes.forEach(cb => cb.checked = this.checked);
+               document.addEventListener("DOMContentLoaded", function() {
+            const selectAll = document.getElementById("selectAll");
+            const checkboxes = document.querySelectorAll('input.row-checkbox');
+
+            // Выделение всех чекбоксов
+            selectAll.addEventListener("change", function() {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            });
+
+            // Автоматическое снятие selectAll, если не все выбраны
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", function() {
+                    const allChecked = Array.from(checkboxes).every(ch => ch.checked);
+                    selectAll.checked = allChecked;
+                });
+            });
         });
 
         // Фильтрация таблицы
