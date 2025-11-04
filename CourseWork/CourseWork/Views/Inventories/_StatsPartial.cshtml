@@ -1,37 +1,43 @@
-﻿@model CourseWork.Models.InventoryWithItemsViewModel
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model CourseWork.Models.InventoryWithItemsViewModel
+@inject IViewLocalizer L
 
-<h5>Статистика</h5>
+<h5>@L["Statistics"]</h5>
 
 @if (Model.Items == null || !Model.Items.Any())
 {
-    <p class="text-muted">Нет элементов для анализа.</p>
+    <p class="text-muted">@L["No_items_for_analysis"]</p>
 }
 else
 {
     <div class="card p-3">
-        <h6>Общая статистика</h6>
+        <h6>@L["General_statistics"]</h6>
         <ul>
-            <li>Всего элементов: <strong>@Model.Items.Count()</strong></li>
+            <li>@L["Total_items"]: <strong>@Model.Items.Count()</strong></li>
             <li>
-                Среднее количество лайков:
+                @L["Average_likes"]:
                 <strong>@(Model.Items.Any() ? Model.Items.Average(i => i.Likes.Count).ToString("0.##") : "0")</strong>
             </li>
             <li>
-                Самый популярный элемент:
-                <strong>@(Model.Items.OrderByDescending(i => i.Likes.Count).FirstOrDefault()?.CustomId ?? "Нет")</strong>
+                @L["Most_popular_item"]:
+                <strong>@(Model.Items.OrderByDescending(i => i.Likes.Count).FirstOrDefault()?.CustomId ?? L["None"].Value)</strong>
             </li>
         </ul>
 
         <hr />
-        <h6>Статистика по полям</h6>
+        <h6>@L["Field_statistics"]</h6>
         <table class="table table-sm">
             <thead>
-                <tr><th>Поле</th><th>Тип</th><th>Заполнено элементов</th></tr>
+                <tr>
+                    <th>@L["Field"]</th>
+                    <th>@L["Type"]</th>
+                    <th>@L["Filled_items"]</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach (var field in Model.Inventory.Fields.OrderBy(f => f.Order))
                 {
-                    var filledCount = Model.Items.Count(i => 
+                    var filledCount = Model.Items.Count(i =>
                     {
                         var values = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(i.ValuesJson);
                         return values.ContainsKey(field.Name) && values[field.Name] != null;
@@ -39,17 +45,21 @@ else
                     <tr>
                         <td>@field.Name</td>
                         <td>@field.Type</td>
-                        <td>@filledCount из @Model.Items.Count()</td>
+                        <td>@filledCount @L["of"] @Model.Items.Count()</td>
                     </tr>
                 }
             </tbody>
         </table>
 
         <hr />
-        <h6>Топ элементов по лайкам</h6>
+        <h6>@L["Top_items_by_likes"]</h6>
         <table class="table table-sm">
             <thead>
-                <tr><th>ID</th><th>Создан</th><th>Лайки</th></tr>
+                <tr>
+                    <th>@L["ID"]</th>
+                    <th>@L["Created"]</th>
+                    <th>@L["Likes"]</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.Items.OrderByDescending(i => i.Likes.Count).Take(10))

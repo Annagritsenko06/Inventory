@@ -1,51 +1,44 @@
-﻿@model CourseWork.Models.InventoryFieldsVM
-
-@* @if (TempData["Error"] != null) *@
-@* { *@
-@*     <div class="alert alert-danger">@TempData["Error"]</div> *@
-@* } *@
-
-@* @if (TempData["Success"] != null) *@
-@* { *@
-@*     <div class="alert alert-success">@TempData["Success"]</div> *@
-@* } *@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model CourseWork.Models.InventoryFieldsVM
+@inject IViewLocalizer L
 
 <div class="mb-3">
-    <h5>Пользовательские поля</h5>
+    <h5>@L["Custom_fields"]</h5>
     <p class="text-muted">
-        Можно добавить до <strong>3</strong> полей каждого типа (текст, многострочный, число, файл, логическое).
-        Порядок можно менять перетаскиванием.
+        @L["Fields_hint"]
     </p>
+
     <form id="fieldsForm" asp-action="EditSelectedField" asp-controller="Inventories" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" name="InventoryId" value="@Model.FieldForm.InventoryId" />
+
         <!-- ====== Тулбар ====== -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <div>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#fieldModal">
-                ➕ Добавить поле
-            </button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#fieldModal">
+                    ➕ @L["Add_field"]
+                </button>
 
-            <button type="submit" form="fieldsForm" name="action" value="edit" class="btn btn-outline-primary btn-sm">
-                ✏️ Редактировать выбранные
-            </button>
-            <button type="submit" form="fieldsForm" name="action" value="delete" class="btn btn-outline-danger btn-sm">
-                🗑 Удалить выбранные
-            </button>
+                <button type="submit" form="fieldsForm" name="action" value="edit" class="btn btn-outline-primary btn-sm">
+                    ✏️ @L["Edit_selected"]
+                </button>
+
+                <button type="submit" form="fieldsForm" name="action" value="delete" class="btn btn-outline-danger btn-sm">
+                    🗑 @L["Delete_selected"]
+                </button>
+            </div>
+            <div class="text-muted small">@L["Select_fields_for_action"]</div>
         </div>
-        <div class="text-muted small">Выберите поля для действий</div>
-    </div>
 
-
+        <!-- ====== Таблица полей ====== -->
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-light">
                 <tr>
                     <th style="width: 30px;"><input type="checkbox" id="selectAllFields" onclick="toggleAllFields(this)" /></th>
-                    <th>Название</th>
-                    <th>Тип</th>
-                    <th>Описание</th>
-                    <th>В таблице</th>
-                    @* <th style="width: 90px;" class="text-center">Действия</th> *@
+                    <th>@L["Name"]</th>
+                    <th>@L["Type"]</th>
+                    <th>@L["Description"]</th>
+                    <th>@L["Show_in_table"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,16 +47,9 @@
                     <tr>
                         <td class="text-center"><input type="checkbox" name="selectedFieldIds" value="@f.Id" /></td>
                         <td>@f.Name</td>
-                        <td>@f.Type</td>
+                        <td>@L[f.Type.ToString()]</td>
                         <td>@f.Description</td>
                         <td class="text-center">@(f.ShowInTable ? "✅" : "❌")</td>
-                        @* <td class="text-center"> *@
-                        @*     <form asp-action="DeleteField" asp-controller="Inventories" method="post" class="d-inline"> *@
-                        @*         @Html.AntiForgeryToken() *@
-                        @*         <input type="hidden" name="id" value="@f.Id" /> *@
-                        @*         <button type="submit" class="btn btn-sm btn-outline-danger">🗑</button> *@
-                        @*     </form> *@
-                        @* </td> *@
                     </tr>
                 }
             </tbody>
@@ -82,42 +68,42 @@
                 <input asp-for="FieldForm.InventoryId" type="hidden" value="@Model.FieldForm.InventoryId" />
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Добавить новое поле</h5>
+                    <h5 class="modal-title">@L["Add_new_field"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label asp-for="FieldForm.Name" class="form-label">Название</label>
+                        <label asp-for="FieldForm.Name" class="form-label">@L["Name"]</label>
                         <input asp-for="FieldForm.Name" class="form-control" required />
                         <span asp-validation-for="FieldForm.Name" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="FieldForm.Description" class="form-label">Описание</label>
+                        <label asp-for="FieldForm.Description" class="form-label">@L["Description"]</label>
                         <textarea asp-for="FieldForm.Description" class="form-control"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="FieldForm.Type" class="form-label">Тип</label>
+                        <label asp-for="FieldForm.Type" class="form-label">@L["Type"]</label>
                         <select asp-for="FieldForm.Type" class="form-select">
-                            <option value="0">Однострочный текст</option>
-                            <option value="1">Многострочный текст</option>
-                            <option value="2">Число</option>
-                            <option value="3">Ссылка</option>
-                            <option value="4">Да/Нет</option>
+                            <option value="0">@L["Single_line_text"]</option>
+                            <option value="1">@L["Multi_line_text"]</option>
+                            <option value="2">@L["Number"]</option>
+                            <option value="3">@L["Link"]</option>
+                            <option value="4">@L["YesNo"]</option>
                         </select>
                     </div>
 
                     <div class="form-check mb-3">
                         <input asp-for="FieldForm.ShowInTable" class="form-check-input" />
-                        <label asp-for="FieldForm.ShowInTable" class="form-check-label">Отображать в таблице</label>
+                        <label asp-for="FieldForm.ShowInTable" class="form-check-label">@L["Show_in_table"]</label>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Сохранить поле</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">💾 @L["Save_field"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
                 </div>
             </form>
         </div>
@@ -132,114 +118,3 @@
         }
     </script>
 }
-
-
-
-@* @model CourseWork.Models.InventoryFieldsVM *@
-
-@* @if (TempData["Error"] != null) *@
-@* { *@
-@*     <div class="alert alert-danger">@TempData["Error"]</div> *@
-@* } *@
-
-@* @if (TempData["Success"] != null) *@
-@* { *@
-@*     <div class="alert alert-success">@TempData["Success"]</div> *@
-@* } *@
-
-@* <div class="mb-3"> *@
-@*     <h5>Пользовательские поля</h5> *@
-@*     <p class="text-muted"> *@
-@*         Можно добавить до <strong>3</strong> полей каждого типа (текст, многострочный, число, файл, логическое). *@
-@*         Порядок можно менять перетаскиванием. *@
-@*     </p> *@
-
-@*     <table class="table table-bordered table-hover align-middle"> *@
-@*         <thead class="table-light"> *@
-@*             <tr> *@
-@*                 <th style="width: 30px;"></th> *@
-@*                 <th>Название</th> *@
-@*                 <th>Тип</th> *@
-@*                 <th>Описание</th> *@
-@*                 <th>В таблице</th> *@
-@*                 <th style="width: 90px;" class="text-center">Действия</th> *@
-@*             </tr> *@
-@*         </thead> *@
-@*         <tbody> *@
-@*             @foreach (var f in Model.Fields.OrderBy(f => f.Order)) *@
-
-@*             { *@
-@*                 <tr> *@
-@*                     <td class="text-center text-muted">☰</td> *@
-@*                     <td>@f.Name</td> *@
-@*                     <td>@f.Type</td> *@
-@*                     <td>@f.Description</td> *@
-@*                     <td class="text-center">@(f.ShowInTable ? "✅" : "❌")</td> *@
-@*                     <td class="text-center"> *@
-@*                         <form asp-action="DeleteField" asp-controller="Inventories" method="post" class="d-inline"> *@
-@*                             @Html.AntiForgeryToken() *@
-@*                             <input type="hidden" name="id" value="@f.Id" /> *@
-@*                             <button type="submit" class="btn btn-sm btn-outline-danger">🗑</button> *@
-@*                         </form> *@
-@*                     </td> *@
-@*                 </tr> *@
-@*             } *@
-@*         </tbody> *@
-@*     </table> *@
-
-@*     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#fieldModal">➕ Добавить поле</button> *@
-@* </div> *@
-
-@* <!-- Модальное окно добавления поля --> *@
-@* <div class="modal fade" id="fieldModal" tabindex="-1"> *@
-@*     <div class="modal-dialog"> *@
-@*         <div class="modal-content"> *@
-@*             <form asp-action="SaveField" asp-controller="Inventories" method="post"> *@
-@*                 @Html.AntiForgeryToken() *@
-
-@*                 <!-- скрытые поля --> *@
-@*                 <input asp-for="FieldForm.Id" type="hidden"/> *@
-@*                 <input asp-for="FieldForm.InventoryId" type="hidden" value="@Model.FieldForm.InventoryId" /> *@
-
-@*                 <div class="modal-header"> *@
-@*                     <h5 class="modal-title">Добавить новое поле</h5> *@
-@*                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button> *@
-@*                 </div> *@
-
-@*                 <div class="modal-body"> *@
-@*                     <div class="mb-3"> *@
-@*                         <label asp-for="FieldForm.Name" class="form-label">Название</label> *@
-@*                         <input asp-for="FieldForm.Name" class="form-control" required /> *@
-@*                         <span asp-validation-for="FieldForm.Name" class="text-danger"></span> *@
-@*                     </div> *@
-
-@*                     <div class="mb-3"> *@
-@*                         <label asp-for="FieldForm.Description" class="form-label">Описание</label> *@
-@*                         <textarea asp-for="FieldForm.Description" class="form-control"></textarea> *@
-@*                     </div> *@
-
-@*                     <div class="mb-3"> *@
-@*                         <label asp-for="FieldForm.Type" class="form-label">Тип</label> *@
-@*                         <select asp-for="FieldForm.Type" class="form-select"> *@
-@*                             <option value="0">Однострочный текст</option> *@
-@*                             <option value="1">Многострочный текст</option> *@
-@*                             <option value="2">Число</option> *@
-@*                             <option value="3">Ссылка</option> *@
-@*                             <option value="4">Да/Нет</option> *@
-@*                         </select> *@
-@*                     </div> *@
-
-@*                     <div class="form-check mb-3"> *@
-@*                         <input asp-for="FieldForm.ShowInTable" class="form-check-input" /> *@
-@*                         <label asp-for="FieldForm.ShowInTable" class="form-check-label">Отображать в таблице</label> *@
-@*                     </div> *@
-@*                 </div> *@
-
-@*                 <div class="modal-footer"> *@
-@*                     <button type="submit" class="btn btn-primary">Сохранить поле</button> *@
-@*                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button> *@
-@*                 </div> *@
-@*             </form> *@
-@*         </div> *@
-@*     </div> *@
-@* </div> *@

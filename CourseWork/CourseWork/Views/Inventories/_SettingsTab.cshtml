@@ -1,7 +1,9 @@
-﻿@model CourseWork.Models.Inventories
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
+@model CourseWork.Models.Inventories
 
 <div class="container mt-3">
-    <h3 class="mb-3">Настройки инвентаря</h3>
+    <h3 class="mb-3">@L["InventorySettings"]</h3>
 
     <form asp-action="SaveSettings" asp-controller="Inventories" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" />
@@ -9,36 +11,36 @@
         <div class="row g-3">
             <!-- Название -->
             <div class="col-md-6">
-                <label asp-for="Name" class="form-label">Название</label>
+                <label asp-for="Name" class="form-label">@L["Name"]</label>
                 <input asp-for="Name" class="form-control" required />
             </div>
 
             <!-- Категория -->
             <div class="col-md-6">
-                <label asp-for="Category" class="form-label">Категория</label>
+                <label asp-for="Category" class="form-label">@L["Category"]</label>
                 <select asp-for="Category" class="form-select">
-                    <option>Equipment</option>
-                    <option>Furniture</option>
-                    <option>Book</option>
-                    <option>Other</option>
+                    <option>@L["Equipment"]</option>
+                    <option>@L["Furniture"]</option>
+                    <option>@L["Book"]</option>
+                    <option>@L["Other"]</option>
                 </select>
             </div>
 
             <!-- Описание (Markdown) -->
             <div class="col-12">
-                <label asp-for="Description" class="form-label">Описание (Markdown)</label>
-                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Введите описание..."></textarea>
-                <small class="text-muted">Поддерживается Markdown — можно использовать **жирный**, *курсив* и списки.</small>
+                <label asp-for="Description" class="form-label">@L["DescriptionMarkdown"]</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="@L["DescriptionPlaceholder"]"></textarea>
+                <small class="text-muted">@L["MarkdownHint"]</small>
             </div>
 
             <!-- Изображение -->
             <div class="col-md-6">
-                <label asp-for="ImageUrl" class="form-label">Изображение (URL)</label>
+                <label asp-for="ImageUrl" class="form-label">@L["ImageUrl"]</label>
                 <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <div class="mt-2">
-                        <img src="@Model.ImageUrl" alt="Изображение инвентаря" class="img-thumbnail" style="max-height:150px;" />
+                        <img src="@Model.ImageUrl" alt="@L["InventoryImageAlt"]" class="img-thumbnail" style="max-height:150px;" />
                     </div>
                 }
             </div>
@@ -46,27 +48,27 @@
             <!-- Публичность -->
             <div class="col-md-6 form-check mt-4">
                 <input asp-for="IsPublic" class="form-check-input" />
-                <label asp-for="IsPublic" class="form-check-label">Публичный инвентарь</label>
-                <div class="form-text">Если включено — все аутентифицированные пользователи смогут добавлять элементы.</div>
+                <label asp-for="IsPublic" class="form-check-label">@L["PublicInventory"]</label>
+                <div class="form-text">@L["PublicInventoryHint"]</div>
             </div>
 
             <!-- Теги -->
             <div class="col-12 position-relative">
-                <label class="form-label">Теги</label>
-                <input id="tagInput" class="form-control" placeholder="Введите теги..." />
+                <label class="form-label">@L["Tags"]</label>
+                <input id="tagInput" class="form-control" placeholder="@L["TagsPlaceholder"]" />
                 <div id="tagSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
-                <small class="text-muted">Начните вводить — появятся подсказки из существующих тегов.</small>
+                <small class="text-muted">@L["TagsHint"]</small>
             </div>
         </div>
 
         <hr class="my-4" />
 
         <!-- Конструктор пользовательского ID -->
-        <h4>Пользовательский ID</h4>
+        <h4>@L["CustomIdTitle"]</h4>
         <p class="text-muted">
-            Настройте формат уникального ID элементов.
-            <span class="text-info" data-bs-toggle="popover" data-bs-trigger="hover" title="Помощь"
-                  data-bs-content="Каждый элемент ID может быть текстом, числом, GUID, датой или последовательностью.">
+            @L["CustomIdDescription"]
+            <span class="text-info" data-bs-toggle="popover" data-bs-trigger="hover" title="@L["Help"]"
+                  data-bs-content="@L["HelpContent"]">
                 ?
             </span>
         </p>
@@ -76,24 +78,25 @@
         </div>
 
         <div class="dropdown mt-2">
-            <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">Добавить элемент</button>
+            <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">@L["AddElement"]</button>
             <ul class="dropdown-menu">
-                <li><button class="dropdown-item" type="button" onclick="addPart('FixedText')">Фиксированный текст</button></li>
-                <li><button class="dropdown-item" type="button" onclick="addPart('Random6')">6-значное число</button></li>
-                <li><button class="dropdown-item" type="button" onclick="addPart('Random9')">9-значное число</button></li>
-                <li><button class="dropdown-item" type="button" onclick="addPart('Guid')">GUID</button></li>
-                <li><button class="dropdown-item" type="button" onclick="addPart('DateTime')">Дата/время</button></li>
-                <li><button class="dropdown-item" type="button" onclick="addPart('Sequence')">Последовательность</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('FixedText')">@L["FixedText"]</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Random6')">@L["Random6"]</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Random9')">@L["Random9"]</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Guid')">@L["Guid"]</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('DateTime')">@L["DateTime"]</button></li>
+                <li><button class="dropdown-item" type="button" onclick="addPart('Sequence')">@L["Sequence"]</button></li>
             </ul>
         </div>
 
         <input type="hidden" id="customIdFormatJson" name="CustomIdFormatJson" value="@Model.CustomIdFormatJson" />
 
         <div class="mt-4">
-            <button type="submit" class="btn btn-success">💾 Сохранить настройки</button>
+            <button type="submit" class="btn btn-success">@L["SaveSettings"]</button>
         </div>
     </form>
 </div>
+
 
 @section Scripts {
     <script>

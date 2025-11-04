@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Access" xml:space="preserve">
+    <value>Access</value>
+  </data>
+  <data name="Accessible_to_all_users" xml:space="preserve">
+    <value>accessible to all authenticated users.</value>
+  </data>
+  <data name="Access_settings" xml:space="preserve">
+    <value>Access settings</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Add_item" xml:space="preserve">
+    <value>Add item</value>
+  </data>
+  <data name="Add_user" xml:space="preserve">
+    <value>Add user</value>
+  </data>
+  <data name="Book" xml:space="preserve">
+    <value>Book</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Custom_ID" xml:space="preserve">
+    <value>Custom ID</value>
+  </data>
+  <data name="Delete_selected" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
+  <data name="Description_Markdown" xml:space="preserve">
+    <value>Description (Markdown)</value>
+  </data>
+  <data name="Discussion" xml:space="preserve">
+    <value>Discussion</value>
+  </data>
+  <data name="Edit_selected" xml:space="preserve">
+    <value>Edit selected</value>
+  </data>
+  <data name="Enter_new_tag" xml:space="preserve">
+    <value>Enter new tag...</value>
+  </data>
+  <data name="Equipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="Fields" xml:space="preserve">
+    <value>Fields</value>
+  </data>
+  <data name="Furniture" xml:space="preserve">
+    <value>Furniture</value>
+  </data>
+  <data name="General_settings" xml:space="preserve">
+    <value>General settings</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="Likes" xml:space="preserve">
+    <value>Likes</value>
+  </data>
+  <data name="Login_to_participate" xml:space="preserve">
+    <value>Log in to participate in the discussion.</value>
+  </data>
+  <data name="Manage_users_with_access" xml:space="preserve">
+    <value>Manage users who have access to this inventory.</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="No_users_with_access" xml:space="preserve">
+    <value>No users with access</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="Public_allow_all_to_add" xml:space="preserve">
+    <value>Public (allow all users to add items)</value>
+  </data>
+  <data name="Public_inventory" xml:space="preserve">
+    <value>Public inventory:</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Save_changes" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="Save_tags" xml:space="preserve">
+    <value>Save tags</value>
+  </data>
+  <data name="Select_items_for_actions" xml:space="preserve">
+    <value>Select items for actions</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="Sort_by_email" xml:space="preserve">
+    <value>Sort by email</value>
+  </data>
+  <data name="Sort_by_name" xml:space="preserve">
+    <value>Sort by name</value>
+  </data>
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Username_or_email" xml:space="preserve">
+    <value>Username or email:</value>
+  </data>
+  <data name="Users_with_access" xml:space="preserve">
+    <value>Users with access:</value>
+  </data>
+  <data name="View_selected" xml:space="preserve">
+    <value>View selected</value>
+  </data>
+  <data name="Write_message" xml:space="preserve">
+    <value>Write a message...</value>
+  </data>
+</root>

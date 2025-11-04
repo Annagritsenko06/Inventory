@@ -1,4 +1,6 @@
 ﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer L
 @model CourseWork.Models.InventoryWithItemsViewModel
 @{
     ViewData["Title"] = Model.Inventory.Name;
@@ -22,7 +24,7 @@
          Model.Inventory.OwnerId.ToString() ==
          User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 
-    var categories = new[] { "Оборудование", "Мебель", "Книга", "Другое" };
+    var categories = new[] { L["Equipment"].Value, L["Furniture"].Value, L["Book"].Value, L["Other"].Value };
     var fieldsVM = Model.Fields ?? new CourseWork.Models.InventoryFieldsVM();
     var fieldsList = fieldsVM.Fields ?? new List<CourseWork.Models.InventoryFieldCreateVM>();
 
@@ -39,7 +41,7 @@
             <a asp-controller="Inventories" asp-action="AddItem"
                asp-route-inventoryId="@Model.Inventory.Id"
                class="btn btn-outline-secondary">
-                ➕ Добавить элемент
+                ➕ @L["Add_item"]
             </a>
         }
     </div>
@@ -61,76 +63,6 @@
 </ul>
 
 
-
-    <!-- ================= ITEMS ================= -->
-
-    @* <div class="tab-pane fade show active" id="items"> *@
-    @*     <form asp-action="BulkAction" method="post" id="itemsForm"> *@
-    @*         @Html.AntiForgeryToken() *@
-    @*         <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" /> *@
-    @*         <div class="d-flex justify-content-between align-items-center mb-2"> *@
-    @*             <div> *@
-    @*                 <button type="submit" name="action" value="delete" class="btn btn-outline-danger btn-sm">🗑 Удалить выбранные</button> *@
-    @*                 <button type="submit" name="action" value="edit" class="btn btn-outline-primary btn-sm">✏️ Редактировать</button> *@
-    @*                 <button type="submit" name="action" value="view" class="btn btn-outline-secondary btn-sm">👁 Просмотр</button> *@
-    @*             </div> *@
-    @*             <div class="text-muted small">Выберите элементы для действий</div> *@
-    @*         </div> *@
-
-    @*         <div class="table-responsive"> *@
-    @*             <table class="table table-hover align-middle"> *@
-    @*                 <thead class="table-light"> *@
-    @*                     <tr> *@
-    @*                         <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)" /></th> *@
-    @*                         @* <th>Custom ID</th> *@ 
-    @*                         @* <th>Created At</th> *@ 
-    @*                         @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order)) *@
-    @*                         { *@
-    @*                             <th>@field.Name</th> *@
-    @*                         } *@
-    @*                         <th>Likes</th> *@
-    @*                     </tr> *@
-    @*                 </thead> *@
-    @*                 <tbody> *@
-    @*                     @{ *@
-    @*                         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); *@
-    @*                         Guid.TryParse(userIdString, out Guid userId); *@
-    @*                         var allFields = Model.Inventory.Fields.OrderBy(f => f.Order).ToList(); *@
-    @*                         var shownFields = allFields.Where(f => f.ShowInTable).ToList(); *@
-    @*                     } *@
-    @*                     @foreach (var item in Model.Items) *@
-    @*                     { *@
-    @*                         <tr> *@
-    @*                             <td><input type="checkbox" name="selectedIds" value="@item.Id" /></td> *@
-    @*                             <td>@item.CustomId</td> *@
-    @*                             <td>@item.CreatedAt.ToString("g")</td> *@
-    @*                             @foreach (var field in shownFields) *@
-    @*                             { *@
-    @*                                 var index = allFields.IndexOf(field); *@
-    @*                                 string value = (index >= 0 && index < item.FieldValues.Count) *@
-    @*                                 ? item.FieldValues[index] *@
-    @*                                 : "-"; *@
-    @*                                 <td>@value</td> *@
-    @*                             } *@
-    @*                             <td> *@
-                                   
-    @*                                 <form asp-action="ToggleLike" asp-controller="Inventories" method="post" class="d-inline"> *@
-    @*                                     @Html.AntiForgeryToken() *@
-    @*                                     <input type="hidden" name="itemId" value="@item.Id" /> *@
-    @*                                     @{ *@
-    @*                                         var isLiked = item.Likes.Any(l => l.UserId == userId); *@
-    @*                                         var icon = isLiked ? "❤️" : "🤍"; *@
-    @*                                     } *@
-    @*                                     <button type="submit" class="btn btn-sm btn-outline-danger">@icon @item.Likes.Count()</button> *@
-    @*                                 </form> *@
-    @*                             </td> *@
-    @*                         </tr> *@
-    @*                     } *@
-    @*                 </tbody> *@
-    @*             </table> *@
-    @*         </div> *@
-    @*     </form> *@
-    @* </div> *@
 <div class="tab-content mt-3">
     <div class="tab-pane fade show active" id="items">
             <form asp-action="EditSelected" method="post" id="itemsForm">
@@ -141,21 +73,18 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                     <button type="submit" name="action" value="delete" class="btn btn-outline-danger btn-sm">
-                        🗑 Удалить выбранные
+                        🗑 @L["Delete_selected"]
                     </button>
-                    @* <button type="submit" name="action" value="view" formaction="@Url.Action("ItemDetails", "Inventories", new { id = Item.Id, isEdit = false })" formmethod="get" class="btn btn-sm btn-outline-secondary">👁</button> *@
-
-                    @* <button type="submit" name="action" value="edit" formaction="@Url.Action("ItemDetails", "Inventories", new { id = item.Id, isEdit = true })" formmethod="get" class="btn btn-sm btn-outline-primary">✏️</button> *@
                     
                     <button type="submit" name="action" value="view" class="btn btn-sm btn-outline-secondary">
-                        👁 Просмотреть выбранные
+                        👁  @L["View_selected"]
                     </button>
                     <button type="submit" name="action" value="edit" class="btn btn-sm btn-outline-primary">
-                        ✏️ Редактировать выбранные
+                        ✏️  @L["Edit_selected"]
                     </button>
 
                 </div>
-                <div class="text-muted small">Выберите элементы для действий</div>
+                <div class="text-muted small">@L["Select_items_for_actions"]</div>
             </div>
 
             <!-- ====== Таблица элементов ====== -->
@@ -164,13 +93,11 @@
                     <thead class="table-light">
                         <tr>
                             <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)" /></th>
-                            @* <th>Custom ID</th> *@
-                            @* <th>Created At</th> *@
                             @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
                             {
                                 <th>@field.Name</th>
                             }
-                            <th>Likes</th>
+                            <th>@L["Likes"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -185,8 +112,7 @@
                         {
                             <tr>
                                 <td><input type="checkbox" name="selectedIds" value="@item.Id" /></td>
-                                @* <td>@item.CustomId</td> *@
-                                @* <td>@item.CreatedAt.ToString("g")</td> *@
+                        
 
                                 @foreach (var field in shownFields)
                                 {
@@ -217,72 +143,17 @@
     </div>
 
     
-
-    @* <div class="tab-pane fade show active" id="items"> *@
-    @*     <div class="table-responsive"> *@
-    @*         <table class="table table-hover align-middle"> *@
-    @*             <thead class="table-light"> *@
-    @*                 <tr> *@
-    @*                     <th></th> *@
-    @*                     <th>Custom ID</th> *@
-    @*                     <th>Created At</th> *@
-    @*                     @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order)) *@
-    @*                     { *@
-    @*                         <th>@field.Name</th> *@
-    @*                     } *@
-    @*                     <th>Likes</th> *@
-    @*                 </tr> *@
-    @*             </thead> *@
-    @*             <tbody> *@
-    @*                 @{ *@
-    @*                     var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); *@
-    @*                     Guid.TryParse(userIdString, out Guid userId); *@
-    @*                     var allFields = Model.Inventory.Fields.OrderBy(f => f.Order).ToList(); *@
-    @*                     var shownFields = allFields.Where(f => f.ShowInTable).ToList(); *@
-    @*                 } *@
-    @*                 @foreach (var item in Model.Items) *@
-    @*                 { *@
-    @*                     <tr> *@
-    @*                         <td><input type="checkbox" /></td> *@
-    @*                         <td>@item.CustomId</td> *@
-    @*                         <td>@item.CreatedAt.ToString("g")</td> *@
-    @*                         @foreach (var field in shownFields) *@
-    @*                         { *@
-    @*                             var index = allFields.IndexOf(field); *@
-    @*                             string value = (index >= 0 && index < item.FieldValues.Count) *@
-    @*                                 ? item.FieldValues[index] *@
-    @*                                 : "-"; *@
-    @*                             <td>@value</td> *@
-    @*                         } *@
-    @*                         <td> *@
-    @*                             <form asp-action="ToggleLike" asp-controller="Inventories" method="post" class="d-inline"> *@
-    @*                                 @Html.AntiForgeryToken() *@
-    @*                                 <input type="hidden" name="itemId" value="@item.Id" /> *@
-    @*                                 @{ *@
-    @*                                     var isLiked = item.Likes.Any(l => l.UserId == userId); *@
-    @*                                     var icon = isLiked ? "❤️" : "🤍"; *@
-    @*                                 } *@
-    @*                                 <button type="submit" class="btn btn-sm btn-outline-danger">@icon @item.Likes.Count()</button> *@
-    @*                             </form> *@
-    @*                         </td> *@
-    @*                     </tr> *@
-    @*                 } *@
-    @*             </tbody> *@
-    @*         </table> *@
-    @*     </div> *@
-    @* </div> *@
-
     <!-- ================= DISCUSSION ================= -->
     <div class="tab-pane fade" id="discussion">
         <div id="messages" class="border rounded p-3 mb-3" style="max-height:300px; overflow:auto;"></div>
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <textarea id="msgText" class="form-control mb-2" rows="3" placeholder="Напишите сообщение..."></textarea>
-            <button id="sendMsg" class="btn btn-outline-secondary">Отправить</button>
+            <textarea id="msgText" class="form-control mb-2" rows="3" placeholder="@L["Write_message"]"></textarea>
+            <button id="sendMsg" class="btn btn-outline-secondary">@L["Send"]</button>
         }
         else
         {
-            <div class="alert alert-light">Авторизуйтесь, чтобы участвовать в обсуждении.</div>
+            <div class="alert alert-light">@L["Login_to_participate"]</div>
         }
     </div>
 
@@ -305,17 +176,17 @@
                 <input type="hidden" name="Id" value="@Model.Inventory.Id" />
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Название</label>
+                    <label class="form-label fw-bold">@L["Name"]</label>
                     <input type="text" name="Name" value="@Model.Inventory.Name" class="form-control" required />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Описание (Markdown)</label>
+                    <label class="form-label fw-bold">@L["Description_Markdown"]</label>
                     <textarea name="Description" class="form-control" rows="5">@Model.Inventory.Description</textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Категория</label>
+                    <label class="form-label fw-bold">@L["Category"]</label>
                     <select name="Category" class="form-select">
                         @foreach (var c in categories)
                         {
@@ -325,12 +196,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Изображение</label>
+                    <label class="form-label fw-bold">@L["Image"]</label>
                     <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewImage(event)" />
                     <div class="mt-2">
                         @if (!string.IsNullOrEmpty(Model.Inventory.ImageUrl))
                         {
-                            <img id="imagePreview" src="@Model.Inventory.ImageUrl" alt="Изображение" class="img-thumbnail" style="max-height:200px;">
+                            <img id="imagePreview" src="@Model.Inventory.ImageUrl" alt="@L["Image"]" class="img-thumbnail" style="max-height:200px;">
                         }
                         else
                         {
@@ -342,66 +213,62 @@
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="IsPublic" value="true" @(Model.Inventory.IsPublic ? "checked" : "") />
                     <input type="hidden" name="IsPublic" value="false" />
-                    <label class="form-check-label">Публичный (разрешить всем добавлять элементы)</label>
+                    <label class="form-check-label">@L["Public_allow_all_to_add"]</label>
                 </div>
 
-                <button type="submit" class="btn btn-success">💾 Сохранить изменения</button>
+                <button type="submit" class="btn btn-success">💾 @L["Save_changes"]</button>
             </form>
         </div>
-
-        <!-- ================= ACCESS ================= -->
-        <!-- ==================== Настройки доступа ==================== -->
-        <div class="tab-pane fade" id="access" role="tabpanel">
-            <h5>Настройки доступа</h5>
+        <!-- ========== ACCESS ========== -->
+        <div class="tab-pane fade" id="access">
+            <h5>@L["Access_settings"]</h5>
 
             @if (Model.Inventory.IsPublic)
             {
                 <div class="alert alert-info">
-                    <strong>Публичный инвентарь:</strong> доступ имеют все аутентифицированные пользователи.
+                    <strong>@L["Public_inventory"]</strong> – @L["Accessible_to_all_users"]
                 </div>
             }
             else
             {
-                <p>Управление пользователями, имеющими доступ к этому инвентарю.</p>
+                <p>@L["Manage_users_with_access"]</p>
 
-                <!-- ======= Добавить пользователя ======= -->
                 <div class="card mb-3">
                     <div class="card-body">
                         <form asp-action="AddUserAccess" asp-controller="Inventories" method="post">
                             @Html.AntiForgeryToken()
-
                             <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
+
                             <div class="mb-2">
-                                <label class="form-label">Имя пользователя или e-mail:</label>
-                                <input type="text" name="searchTerm" class="form-control" value="@Model.SearchTerm" placeholder="Введите имя или e-mail..." />
+                                <label class="form-label">@L["Username_or_email"]</label>
+                                <input type="text" name="searchTerm" class="form-control" value="@Model.SearchTerm" placeholder="@L["Enter_name_or_email"]" />
                             </div>
-                            <button type="submit" class="btn btn-primary">Добавить пользователя</button>
+
+                            <button type="submit" class="btn btn-primary">@L["Add_user"]</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- ======= Список пользователей ======= -->
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Пользователи с доступом:</strong>
+                    <strong>@L["Users_with_access"]</strong>
                     <div>
                         <a asp-action="Details" asp-route-id="@Model.Inventory.Id" asp-route-sortOrder="name"
                            class="btn btn-sm btn-outline-secondary @(Model.SortOrder == "name" ? "active" : "")">
-                            Сортировать по имени
+                            @L["Sort_by_name"]
                         </a>
                         <a asp-action="Details" asp-route-id="@Model.Inventory.Id" asp-route-sortOrder="email"
                            class="btn btn-sm btn-outline-secondary @(Model.SortOrder == "email" ? "active" : "")">
-                            Сортировать по email
+                            @L["Sort_by_email"]
                         </a>
-
                     </div>
                 </div>
 
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Имя</th>
+                            <th>@L["Name"]</th>
                             <th>Email</th>
-                            <th style="width: 120px;">Действие</th>
+                            <th style="width: 120px;">@L["Action"]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -416,7 +283,7 @@
                                         <form asp-action="RemoveUserAccess" method="post" class="d-inline">
                                             <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
                                             <input type="hidden" name="userId" value="@user.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">@L["Remove"]</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -424,26 +291,20 @@
                         }
                         else
                         {
-                            <tr>
-                                <td colspan="3" class="text-muted text-center">Нет пользователей с доступом</td>
-                            </tr>
+                            <tr><td colspan="3" class="text-muted text-center">@L["No_users_with_access"]</td></tr>
                         }
                     </tbody>
-
                 </table>
-
-               
             }
         </div>
 
-
-        <!-- ================= TAGS ================= -->
+        <!-- ========== TAGS ========== -->
         <div class="tab-pane fade" id="tags">
             <form asp-action="SaveTags" method="post">
                 <input type="hidden" name="InventoryId" value="@Model.Inventory.Id" />
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Теги</label>
+                    <label class="form-label fw-bold">@L["Tags"]</label>
 
                     @if (Model.Inventory.Tags != null && Model.Inventory.Tags.Any())
                     {
@@ -453,24 +314,19 @@
                         }
                     }
 
-                    <!-- Пустой инпут для нового тега -->
-                    <input type="text" name="Tags" class="form-control" placeholder="Введите новый тег..." />
+                    <input type="text" name="Tags" class="form-control" placeholder="@L["Enter_new_tag"]" />
                 </div>
 
-                <button type="submit" class="btn btn-success">💾 Сохранить теги</button>
+                <button type="submit" class="btn btn-success">💾 @L["Save_tags"]</button>
             </form>
         </div>
 
-
-        <!-- ================= ELEMENTS (FIELDS) ================= -->
-        <div class="tab-pane fade" id="elements" role="tabpanel">
+        <!-- ========== FIELDS ========== -->
+        <div class="tab-pane fade" id="elements">
             @await Html.PartialAsync("_InventoriesFields", new CourseWork.Models.InventoryFieldsVM
    {
-       Fields = fieldsList, 
-       FieldForm = new InventoryFieldCreateVM
-       {
-           InventoryId = Model.Inventory.Id 
-       }
+       Fields = fieldsList,
+       FieldForm = new InventoryFieldCreateVM { InventoryId = Model.Inventory.Id }
    })
         </div>
     }
