@@ -47,20 +47,24 @@
     </div>
 </div>
 
-<!-- === Вкладки Bootstrap === -->
-<ul class="nav nav-tabs" id="inventoryTabs" role="tablist">
-    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#items">📦 Элементы</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#discussion">💬 Обсуждение</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#customid">🧩 Custom ID</button></li>
-    @if (isOwnerOrAdmin)
-    {
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#stats">📊 Статистика</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit">⚙️ Общие настройки</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#access">🔐 Доступ</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tags">🏷️ Теги</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#elements">🧱 Элементы (поля)</button></li>
-    }
-</ul>
+<!-- Навигационные вкладки -->
+<div class="overflow-auto">
+    <ul class="nav nav-tabs flex-nowrap" id="inventoryTabs" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#items">📦 @L["Items"]</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#discussion">💬 @L["Discussion"]</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#customid">🧩 @L["Custom_ID"]</button></li>
+        @if (isOwnerOrAdmin)
+        {
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#stats">📊 @L["Statistics"]</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit">⚙️ @L["General_settings"]</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#access">🔐 @L["Access"]</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tags">🏷️ @L["Tags"]</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#elements">🧱 @L["Fields"]</button></li>
+        }
+    </ul>
+</div>
+
+
 
 
 <div class="tab-content mt-3">
@@ -331,6 +335,23 @@
         </div>
     }
 </div>
+<style>
+    /* Добавим отступы и минимальную ширину для кнопок вкладок на мобильных */
+    #inventoryTabs .nav-link {
+        white-space: nowrap;
+        min-width: 90px;
+        text-align: center;
+    }
+
+    /* Скролл на мобильных устройствах */
+    @@media (max-width: 576px) {
+        #inventoryTabs
+
+    {
+        -webkit-overflow-scrolling: touch; /* плавный скролл на iOS */
+    }
+
+    }</style>
 
 @section Scripts {
     <script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>

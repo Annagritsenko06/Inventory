@@ -1074,3 +1074,5 @@ D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._SettingsTab.ru.resources
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._StatsPartial.en.resources
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._StatsPartial.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Profile.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Profile.ru.resources
