@@ -24,7 +24,7 @@
          Model.Inventory.OwnerId.ToString() ==
          User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 
-    var categories = new[] { L["Equipment"].Value, L["Furniture"].Value, L["Book"].Value, L["Other"].Value };
+  //  var categories = new[] { L["Equipment"].Value, L["Furniture"].Value, L["Book"].Value, L["Other"].Value };
     var fieldsVM = Model.Fields ?? new CourseWork.Models.InventoryFieldsVM();
     var fieldsList = fieldsVM.Fields ?? new List<CourseWork.Models.InventoryFieldCreateVM>();
 
@@ -192,12 +192,16 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Category"]</label>
                     <select name="Category" class="form-select">
-                        @foreach (var c in categories)
+                        @foreach (var c in Enum.GetValues(typeof(CourseWork.Models.Inventories.InventoryCategory)))
                         {
-                            <option value="@c" selected="@(Model.Inventory.Category == c)">@c</option>
+                            <option value="@c" selected="@(Model.Inventory.Category == (CourseWork.Models.Inventories.InventoryCategory)c)">
+                                @* @L[c.ToString()] *@
+                                @c
+                            </option>
                         }
                     </select>
                 </div>
+               
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Image"]</label>
@@ -285,7 +289,7 @@
                             <thead class="table-light">
                                 <tr class="text-muted small text-uppercase">
                                     <th style="width: 40px;">
-                                        <input type="checkbox" id="selectAll" class="form-check-input" />
+                                        <input type="checkbox" id="selectAllUsers" class="form-check-input" />
                                     </th>
                                     <th>@L["Name"]</th>
                                     <th>Email</th>
@@ -407,36 +411,39 @@
             output.src = URL.createObjectURL(event.target.files[0]);
             output.classList.remove('d-none');
         }
-        
+      
+
+
 function toggleAll(source) {
     const checkboxes = document.querySelectorAll('input[name="selectedIds"]');
     checkboxes.forEach(cb => cb.checked = source.checked);
 }
 
-        document.addEventListener('DOMContentLoaded', function () {
-                        const selectAll = document.getElementById('selectAll');
-                        const checkboxes = document.querySelectorAll('.user-checkbox');
-                        const deleteBtn = document.getElementById('deleteSelectedBtn');
-                        const form = document.getElementById('bulkDeleteForm');
+             document.addEventListener('DOMContentLoaded', function () {
+            const selectAll = document.getElementById('selectAllUsers'); // новый id
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const form = document.getElementById('bulkDeleteForm');
 
-                        function updateDeleteButton() {
-                            const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-                            deleteBtn.disabled = !anyChecked;
-                        }
+            function updateDeleteButton() {
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                deleteBtn.disabled = !anyChecked;
+            }
 
-                        selectAll.addEventListener('change', function () {
-                            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-                            updateDeleteButton();
-                        });
+            selectAll.addEventListener('change', function () {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateDeleteButton();
+            });
 
-                        checkboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
+            checkboxes.forEach(cb => cb.addEventListener('change', updateDeleteButton));
 
-                        deleteBtn.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            if (confirm('@L["Confirm_delete_selected_users"]')) {
-                                form.submit();
-                            }
-                        });
-                    });
+            deleteBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (confirm('@L["Confirm_delete_selected_users"]')) {
+                    form.submit();
+                }
+            });
+        });
+
     </script>
 }

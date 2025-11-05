@@ -16,15 +16,12 @@
             </div>
 
             <!-- Категория -->
-            <div class="col-md-6">
                 <label asp-for="Category" class="form-label">@L["Category"]</label>
-                <select asp-for="Category" class="form-select">
-                    <option>@L["Equipment"]</option>
-                    <option>@L["Furniture"]</option>
-                    <option>@L["Book"]</option>
-                    <option>@L["Other"]</option>
-                </select>
-            </div>
+                <div class="col-md-6">
+                    <label asp-for="Category" class="form-label">@L["Category"]</label>
+                <select asp-for="Category" asp-items="Html.GetEnumSelectList<CourseWork.Models.Inventories.InventoryCategory>()" class="form-select"></select>
+                </div>
+
 
             <!-- Описание (Markdown) -->
             <div class="col-12">
@@ -62,6 +59,7 @@
                     {
                         <span class="badge bg-light text-dark border px-2 py-1">@tag.Name</span>
                     }
+                    <input type="hidden" name="Tags" id="hiddenTags" value="@string.Join(",", Model.Tags.Select(t => t.Name))" />
                 </div>
             </div>
 
@@ -107,6 +105,80 @@
 @section Scripts {
     <script>
        
+             //автозаполнение тегов
+    
+    const tagInput = document.getElementById('tagInput');
+    const tagSuggestions = document.getElementById('tagSuggestions');
+    const selectedTags = document.getElementById('selectedTags');
+    const hiddenTags = document.getElementById('hiddenTags');
+
+    let tags = hiddenTags.value ? hiddenTags.value.split(',').map(t => t.trim()).filter(t => t) : [];
+
+    function renderTags() {
+        selectedTags.innerHTML = '';
+        tags.forEach(tag => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-light text-dark border px-2 py-1';
+            badge.textContent = tag;
+
+            // const removeBtn = document.createElement('button');
+            // removeBtn.type = 'button';
+            // removeBtn.className = 'btn-close btn-close-sm ms-1';
+            // removeBtn.onclick = () => {
+            //     tags = tags.filter(t => t !== tag);
+            //     updateHiddenInput();
+            //     renderTags();
+            // };
+
+            //badge.appendChild(removeBtn);
+            selectedTags.appendChild(badge);
+        });
+    }
+
+    function updateHiddenInput() {
+        hiddenTags.value = tags.join(',');
+    }
+
+    tagInput.addEventListener('input', async () => {
+        const query = tagInput.value.trim();
+        tagSuggestions.innerHTML = '';
+        if (!query) return;
+
+        const res = await fetch(`/Inventories/GetTagSuggestions?term=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        data.forEach(tag => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = tag;
+            item.onclick = () => {
+                if (!tags.includes(tag)) tags.push(tag);
+                updateHiddenInput();
+                renderTags();
+                tagInput.value = '';
+                tagSuggestions.innerHTML = '';
+            };
+            tagSuggestions.appendChild(item);
+        });
+    });
+
+    tagInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const val = tagInput.value.trim();
+            if (val && !tags.includes(val)) {
+                tags.push(val);
+                updateHiddenInput();
+                renderTags();
+            }
+            tagInput.value = '';
+            tagSuggestions.innerHTML = '';
+        }
+    });
+
+    renderTags();
+
 
         // ----------------------------
         //  Конструктор ID

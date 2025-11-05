@@ -46,7 +46,10 @@ namespace CourseWork.Services
       .Property(b => b.CustomIdFormatJson)
       .HasColumnName("custom_id_format_json")
       .HasColumnType("jsonb");
-
+            modelBuilder
+        .Entity<Inventories>()
+        .Property(i => i.Category)
+        .HasConversion<string>();
 
         //    modelBuilder.Entity<Inventories>()
         //.HasMany(i => i.Tags)

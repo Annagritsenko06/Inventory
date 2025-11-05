@@ -68,7 +68,7 @@ namespace InventoryManager.Controllers
                 query = query.Where(i => 
                     i.Name.Contains(search) ||
                     i.Description.Contains(search) ||
-                    i.Category.Contains(search) ||
+                    i.Category.ToString().Contains(search) ||
                     i.Tags.Any(t => t.Name.Contains(search)));
             }
 
@@ -81,11 +81,14 @@ namespace InventoryManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveSettings(Inventories model, IFormFile? imageFile)
+        public async Task<IActionResult> SaveSettings(Inventories model, IFormFile? imageFile, string? Tags)
         {
             var user = await _userManager.GetUserAsync(User); // Получаем текущего пользователя
             if (user == null) return Unauthorized();
-            var inv = await _db.Inventories.FindAsync(model.Id);
+            //var inv = await _db.Inventories.FindAsync(model.Id);
+            var inv = await _db.Inventories
+        .Include(i => i.Tags)
+        .FirstOrDefaultAsync(i => i.Id == model.Id);
             if (inv == null)
             {
                 // Создаем новый объект, если не найден существующий
@@ -125,8 +128,28 @@ namespace InventoryManager.Controllers
 
                     inv.ImageUrl = "/images/" + fileName;
                 }
+
                 inv.IsPublic = model.IsPublic;
                 inv.CustomIdFormatJson = model.CustomIdFormatJson;
+                if (!string.IsNullOrEmpty(Tags))
+                {
+                    var tagNames = Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                       .Distinct()
+                                       .ToList();
+
+                    inv.Tags.Clear();
+
+                    foreach (var name in tagNames)
+                    {
+                        var tag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == name);
+                        if (tag == null)
+                        {
+                            tag = new InventoryTag { Name = name };
+                            _db.InventoryTags.Add(tag);
+                        }
+                        inv.Tags.Add(tag);
+                    }
+                }
                 _db.Update(inv);
             }
 
@@ -135,40 +158,7 @@ namespace InventoryManager.Controllers
             return RedirectToAction("Details", new { id = inv.Id });
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> BulkAction(int inventoryId, string action, List<int> selectedIds)
-        //{
-        //    if (selectedIds == null || !selectedIds.Any())
-        //    {
-        //        TempData["Error"] = "Не выбрано ни одного элемента.";
-        //        return RedirectToAction("Details", new { id = inventoryId });
-        //    }
-
-        //    switch (action)
-        //    {
-        //        case "delete":
-        //            var itemsToDelete = _db.InventoryItems.Where(i => selectedIds.Contains(i.Id));
-        //            _db.InventoryItems.RemoveRange(itemsToDelete);
-        //            await _db.SaveChangesAsync();
-        //            TempData["Success"] = "Выбранные элементы удалены.";
-        //            break;
-
-        //        case "edit":
-        //            if (selectedIds.Count == 1)
-        //                return RedirectToAction("EditItem", new { id = selectedIds.First() });
-        //            TempData["Error"] = "Редактировать можно только один элемент за раз.";
-        //            break;
-
-        //        case "view":
-        //            if (selectedIds.Count == 1)
-        //                return RedirectToAction("ItemDetails", new { id = selectedIds.First() });
-        //            TempData["Error"] = "Просматривать можно только один элемент за раз.";
-        //            break;
-        //    }
-
-        //    return RedirectToAction("Details", new { id = inventoryId });
-        //}
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BulkAction(int inventoryId, string action, int[] selectedIds)
@@ -278,19 +268,7 @@ namespace InventoryManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditSelected(int inventoryId, List<int> selectedIds, string action)
         {
-            //if (selectedIds == null || !selectedIds.Any())
-            //    return RedirectToAction("Details", new { id = Id });
-            //int itemId = selectedIds.First();
-            //if (action.ToLower() == "delete")
-            //{
-            //    var itemsToDelete = _db.InventoryItems.Where(i => selectedIds.Contains(i.Id));
-            //    _db.InventoryItems.RemoveRange(itemsToDelete);
-            //    await _db.SaveChangesAsync();
-            //    TempData["Success"] = "Элементы удалены.";
-            //    break;
-            //}
-
-            //return RedirectToAction("ItemDetails", new { id = itemId, isEdit = true });
+            
             if (selectedIds == null || !selectedIds.Any())
             {
                 TempData["Error"] = "Не выбраны элементы для действия.";
@@ -416,147 +394,6 @@ namespace InventoryManager.Controllers
         }
 
 
-        // GET: /Inventories/Edit/5
-        // [HttpGet]
-        //public IActionResult Edit(int inventoryId)
-        //{
-        //    var inventory = _db.Inventories
-        //                       .Include(i => i.Fields)
-        //                       .Include(i => i.Tags)
-        //                       .FirstOrDefault(i => i.Id == inventoryId);
-
-        //    if (inventory == null)
-        //        return NotFound();
-
-        //    // Формируем ViewModel
-        //    var vm = new InventoryEditVM
-        //    {
-        //        Inventory = inventory,
-        //        Fields = new InventoryFieldsVM
-        //        {
-        //            Fields = inventory.Fields.Select(f => new InventoryFieldCreateVM
-        //            {
-        //                Id = f.Id,
-        //                InventoryId = f.InventoryId,
-        //                Name = f.Name,
-        //                Description = f.Description,
-        //                Type = f.Type,
-        //                ShowInTable = f.ShowInTable,
-        //                Order = f.Order
-        //            }).ToList(),
-
-        //            // Для формы добавления нового поля
-        //            FieldForm = new InventoryFieldCreateVM
-        //            {
-        //                InventoryId = inventory.Id
-        //            }
-        //        }
-        //    };
-
-        //    return View(vm);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult Edit(InventoryEditVM model, string TagsHidden, IFormFile? imageFile)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        Console.WriteLine("ModelState не валиден!");
-        //        foreach (var kvp in ModelState)
-        //        {
-        //            var key = kvp.Key;
-        //            var errors = kvp.Value.Errors;
-        //            foreach (var error in errors)
-        //            {
-        //                Console.WriteLine($"Ошибка в поле {key}: {error.ErrorMessage}");
-        //            }
-        //        }
-        //        return View(model);
-        //    }
-
-
-        //    var inv = _db.Inventories
-        //                 .Include(i => i.Tags)
-        //                 .Include(i => i.Fields)
-        //                 .FirstOrDefault(i => i.Id == model.Inventory.Id);
-
-        //    if (inv == null)
-        //    {
-        //        Console.WriteLine($"Инвентарь с ID {model.Inventory.Id} не найден!");
-        //        return NotFound();
-        //    }
-
-        //    inv.Name = model.Inventory.Name;
-        //    inv.Description = model.Inventory.Description;
-        //    inv.Category = model.Inventory.Category;
-        //    inv.IsPublic = model.Inventory.IsPublic;
-
-        //    // Обновляем изображение
-        //    if (imageFile != null && imageFile.Length > 0)
-        //    {
-        //        Console.WriteLine($"Загружаем изображение: {imageFile.FileName}");
-        //        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-        //        if (!Directory.Exists(uploadsDir))
-        //            Directory.CreateDirectory(uploadsDir);
-
-        //        var fileName = Path.GetFileName(imageFile.FileName);
-        //        var filePath = Path.Combine(uploadsDir, fileName);
-
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            imageFile.CopyTo(stream);
-        //        }
-
-        //        inv.ImageUrl = "/images/" + fileName;
-        //    }
-
-        //    // Обновляем теги
-        //    var currentTags = JsonSerializer.Deserialize<List<string>>(TagsHidden ?? "[]") ?? new List<string>();
-        //    inv.Tags.Clear();
-        //    foreach (var tagName in currentTags)
-        //    {
-        //        var tag = _db.InventoryTags.FirstOrDefault(t => t.Name == tagName)
-        //                  ?? new InventoryTag { Name = tagName };
-        //        inv.Tags.Add(tag);
-        //        Console.WriteLine($"Добавляем тег: {tag.Name}");
-        //    }
-
-        //    //// Добавляем новое пользовательское поле
-        //    //var newFieldVm = model.Fields.FieldForm;
-        //    //if (!string.IsNullOrWhiteSpace(newFieldVm.Name))
-        //    //{
-        //    //    Console.WriteLine($"Добавляем новое поле: {newFieldVm.Name}");
-        //    //    var newField = new InventoryField
-        //    //    {
-        //    //        InventoryId = inv.Id,
-        //    //        Name = newFieldVm.Name,
-        //    //        Description = newFieldVm.Description,
-        //    //        Type = newFieldVm.Type,
-        //    //        ShowInTable = newFieldVm.ShowInTable,
-        //    //        Order = inv.Fields.Any() ? inv.Fields.Max(f => f.Order) + 1 : 1
-        //    //    };
-
-        //    //    if (inv.Fields == null)
-        //    //    {
-        //    //        Console.WriteLine("Навигационное свойство Fields пустое, создаем новый список");
-        //    //        inv.Fields = new List<InventoryField>();
-        //    //    }
-
-        //    //    inv.Fields.Add(newField);
-        //    //}
-        //    //else
-        //    //{
-        //    //    Console.WriteLine("Поле не добавлено: Name пустой");
-        //    //}
-
-        //    //Console.WriteLine($"Всего полей после добавления: {inv.Fields.Count}");
-
-        //    //_db.SaveChanges();
-        //    //Console.WriteLine("SaveChanges выполнен");
-
-        //    return RedirectToAction("Details", new { id = inv.Id });
-        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveTags(int InventoryId, List<string> Tags)
@@ -601,7 +438,7 @@ namespace InventoryManager.Controllers
 
             var inventories = await _db.Inventories
                 .Include(i => i.Items)
-                .Where(i => i.Category == tag)
+                .Where(i => i.Category.ToString() == tag)
                 .ToListAsync();
 
             ViewBag.Tag = tag;
@@ -706,95 +543,6 @@ namespace InventoryManager.Controllers
         }
 
 
-        //public IActionResult SaveField(InventoryFieldsVM model)
-        //{
-        //    var field = model.FieldForm;
-        //    // === Дебаг ModelState ===
-        //    if (!ModelState.IsValid)
-        //    {
-        //        Console.WriteLine("=== ModelState НЕ валиден ===");
-        //        foreach (var kv in ModelState)
-        //        {
-        //            var key = kv.Key;
-        //            foreach (var err in kv.Value.Errors)
-        //            {
-        //                Console.WriteLine($"Поле: {key}, Ошибка: {err.ErrorMessage}");
-        //            }
-        //        }
-
-        //        var errors = string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-        //        TempData["Error"] = $"Неверные данные: {errors}";
-        //        return RedirectToAction("Details", new { id = field.InventoryId });
-        //    }
-
-        //    Console.WriteLine($"=== Начало сохранения поля ===");
-        //    Console.WriteLine($"ID поля: {field.Id}");
-        //    Console.WriteLine($"InventoryId: {field.InventoryId}");
-        //    Console.WriteLine($"Название: {field.Name}");
-        //    Console.WriteLine($"Описание: {field.Description}");
-        //    Console.WriteLine($"Тип: {field.Type}");
-        //    Console.WriteLine($"ShowInTable: {field.ShowInTable}");
-
-        //    // Проверка лимита по типу
-        //    var existingCount = _db.InventoryFields
-        //        .Count(f => f.InventoryId == field.InventoryId && f.Type == field.Type && f.Id != field.Id);
-        //    Console.WriteLine($"Существующих полей такого типа: {existingCount}");
-
-        //    if (field.Id == 0 && existingCount >= 3)
-        //    {
-        //        TempData["Error"] = $"Нельзя добавить больше 3 полей типа {field.Type}";
-        //        Console.WriteLine("Превышен лимит полей по типу!");
-        //        return RedirectToAction("Details", new { id = field.InventoryId });
-        //    }
-
-        //    if (field.Id == 0)
-        //    {
-        //        int maxOrder = _db.InventoryFields
-        //            .Where(f => f.InventoryId == field.InventoryId)
-        //            .Max(f => (int?)f.Order) ?? 0;
-        //        field.Order = maxOrder + 1;
-
-        //        Console.WriteLine($"Максимальный порядок: {maxOrder}, Новый порядок: {field.Order}");
-
-        //        var entity = new InventoryField
-        //        {
-        //            InventoryId = field.InventoryId,
-        //            Name = field.Name,
-        //            Description = field.Description,
-        //            Type = field.Type,
-        //            ShowInTable = field.ShowInTable,
-        //            Order = field.Order
-        //        };
-
-        //        _db.InventoryFields.Add(entity);
-        //        Console.WriteLine("Добавлено новое поле в DbContext.");
-        //    }
-        //    else
-        //    {
-        //        var existing = _db.InventoryFields.Find(field.Id);
-        //        if (existing == null)
-        //        {
-        //            TempData["Error"] = "Поле не найдено";
-        //            Console.WriteLine("Ошибка: поле не найдено при редактировании!");
-        //            return RedirectToAction("Details", new { id = field.InventoryId });
-        //        }
-
-        //        existing.Name = field.Name;
-        //        existing.Description = field.Description;
-        //        existing.Type = field.Type;
-        //        existing.ShowInTable = field.ShowInTable;
-        //        existing.Order = field.Order;
-
-        //        Console.WriteLine("Существующее поле обновлено.");
-        //    }
-
-        //    Console.WriteLine("=== Сохраняем изменения в БД ===");
-        //    _db.SaveChanges();
-        //    Console.WriteLine("=== Изменения сохранены ===");
-
-        //    TempData["Success"] = "Поле успешно сохранено";
-        //    return RedirectToAction("Details", new { id = field.InventoryId });
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -858,18 +606,18 @@ namespace InventoryManager.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult ReorderFields([FromBody] List<int> orderedIds)
-        {
-            for (int i = 0; i < orderedIds.Count; i++)
-            {
-                var field = _db.InventoryFields.FirstOrDefault(f => f.Id == orderedIds[i]);
-                if (field != null)
-                    field.Order = i;
-            }
-            _db.SaveChanges();
-            return Ok();
-        }
+        //[HttpPost]
+        //public IActionResult ReorderFields([FromBody] List<int> orderedIds)
+        //{
+        //    for (int i = 0; i < orderedIds.Count; i++)
+        //    {
+        //        var field = _db.InventoryFields.FirstOrDefault(f => f.Id == orderedIds[i]);
+        //        if (field != null)
+        //            field.Order = i;
+        //    }
+        //    _db.SaveChanges();
+        //    return Ok();
+        //}
         [HttpGet]
         public IActionResult AddItem(int inventoryId)
         {
@@ -1031,70 +779,7 @@ namespace InventoryManager.Controllers
 
             return newId;
         }
-        //    public IActionResult Details(int id)
-        //    {
-        //        var inventory = _db.Inventories
-        //.Include(i => i.Fields)
-        //.Include(i => i.Items)
-        //    .ThenInclude(it => it.Likes)
-        //.Include(i => i.AllowedUsers) // <- важно
-        //.FirstOrDefault(i => i.Id == id);
-
-
-        //        if (inventory == null) return NotFound();
-
-        //        // Подготовка FieldForm для формы
-        //        var fieldForm = new InventoryFieldCreateVM
-        //        {
-        //            InventoryId = inventory.Id
-        //        };
-
-        //        // Подготовка списка существующих полей
-        //        var fieldsVM = new InventoryFieldsVM
-        //        {
-        //            Fields = inventory.Fields
-        //                .OrderBy(f => f.Order)
-        //                .Select(f => new InventoryFieldCreateVM
-        //                {
-        //                    Id = f.Id,
-        //                    InventoryId = f.InventoryId,
-        //                    Name = f.Name,
-        //                    Description = f.Description,
-        //                    Type = f.Type,
-        //                    ShowInTable = f.ShowInTable,
-        //                    Order = f.Order
-        //                })
-        //                .ToList(),
-        //            FieldForm = fieldForm
-        //        };
-
-        //        var viewModel = new InventoryWithItemsViewModel
-        //        {
-        //            Inventory = inventory,
-        //            Items = inventory.Items.Select(item =>
-        //            {
-        //                var jsonNode = System.Text.Json.Nodes.JsonNode.Parse(item.ValuesJson);
-
-        //                return new InventoryItemViewModel
-        //                {
-        //                    Id = item.Id,
-        //                    InventoryId = item.InventoryId,
-        //                    CustomId = item.CustomId,
-        //                    CreatedAt = item.CreatedAt,
-        //                    Likes = item.Likes,
-        //                    ValuesJson = item.ValuesJson,
-        //                    FieldValues = inventory.Fields
-        //                        .OrderBy(f => f.Order)
-        //                        .Select(f => jsonNode?[f.Name]?.ToString() ?? string.Empty)
-        //                        .ToList()
-        //                };
-        //            }).ToList(),
-        //            Fields = fieldsVM
-        //        };
-
-        //        return View(viewModel);
-        //    }
-
+       
         public async Task<IActionResult> Details(int id, string sortOrder = "name")
         {
             var inventory = await _db.Inventories

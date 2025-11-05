@@ -49,7 +49,7 @@ public class HomeController : Controller
 
         // Теги (категории)
         var tags = await _context.Inventories
-            .Where(i => !string.IsNullOrEmpty(i.Category))
+            .Where(i => !string.IsNullOrEmpty(i.Category.ToString()))
             .Select(i => i.Category)
             .Distinct()
             .OrderBy(c => c)

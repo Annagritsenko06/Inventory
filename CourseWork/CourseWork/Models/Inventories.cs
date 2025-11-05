@@ -6,7 +6,14 @@ namespace CourseWork.Models
     
         public class Inventories
         {
-           [Column("id")]
+        public enum InventoryCategory
+        {
+            Equipment,
+            Furniture,
+            Book,
+            Other
+        }
+        [Column("id")]
         public int Id { get; set; }
             [Required]
             [Column("name")]
@@ -14,8 +21,7 @@ namespace CourseWork.Models
         [Column("description")]
         public string? Description { get; set; }
         [Column("category")]
-        public string Category { get; set; } = "Other";
-        [Column("owner_id")]
+      public InventoryCategory Category { get; set; } = InventoryCategory.Other; [Column("owner_id")]
         public Guid OwnerId { get; set; } = Guid.Empty!;
         [Column("is_public")]
         public bool IsPublic { get; set; }
