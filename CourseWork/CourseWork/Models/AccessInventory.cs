@@ -13,7 +13,7 @@ namespace CourseWork.Models
 
 
         public Guid user_id { get; set; }
-        [ForeignKey(nameof(user_id))] // <-- указываем внешний ключ
+        [ForeignKey(nameof(user_id))] 
         public User user { get; set; }
 
         public access_type type { get; set; }

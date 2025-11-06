@@ -808,6 +808,27 @@ namespace InventoryManager.Controllers
        .OrderBy(u => u.UserName)
        .ToListAsync();
 
+            var user = User.Identity?.IsAuthenticated == true
+    ? await _db.Users.FirstOrDefaultAsync(u => u.Id.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier))
+    : null;
+
+            bool isOwnerOrAdmin = user != null &&
+                (user.Id == inventory.OwnerId || await _userManager.IsInRoleAsync(user, "Admin"));
+
+            bool canEdit = false;
+
+            if (isOwnerOrAdmin)
+            {
+                canEdit = true;
+            }
+            else if (user != null)
+            {
+                canEdit = await _db.AccessInventories
+                    .AnyAsync(ai => ai.user_id == user.Id
+                                    && ai.inventory_template_id == id
+                                    && ai.type == access_type.Write);
+            }
+
             var fieldsVM = new InventoryFieldsVM
             {
                 Fields = inventory.Fields
@@ -849,8 +870,11 @@ namespace InventoryManager.Controllers
                 Fields = fieldsVM,
                 SortOrder = sortOrder,
                 AllowedUsers = allowedUsers.ToList(),
-                 UsersWithoutAccess = usersWithoutAccess
+                 UsersWithoutAccess = usersWithoutAccess,
+                 CanEdit=canEdit
             };
+          
+
 
             return View(viewModel);
         }
@@ -859,7 +883,7 @@ namespace InventoryManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleLike(int itemId)
         {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); // string
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); 
             if (!Guid.TryParse(userIdString, out Guid userGuid))
             {
                 return Unauthorized();
@@ -878,7 +902,7 @@ namespace InventoryManager.Controllers
                 _db.ItemLikes.Add(new ItemLike
                 {
                     ItemId = itemId,
-                    UserId = userGuid, // теперь тип совпадает
+                    UserId = userGuid, 
                     CreatedAt = DateTime.UtcNow
                 });
             }

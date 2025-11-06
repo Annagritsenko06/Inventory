@@ -28,18 +28,18 @@ public class HomeController : Controller
             .AsQueryable();
 
         // Фильтруем в зависимости от роли
-        if (!isAdmin)
-        {
-            if (user != null)
-            {
-                inventoriesQuery = inventoriesQuery.Where(i =>
-                    i.IsPublic || i.OwnerId == user.Id);
-            }
-            else
-            {
-                inventoriesQuery = inventoriesQuery.Where(i => i.IsPublic);
-            }
-        }
+        //if (!isAdmin)
+        //{
+        //    if (user != null)
+        //    {
+        //        inventoriesQuery = inventoriesQuery.Where(i =>
+        //            i.IsPublic || i.OwnerId == user.Id);
+        //    }
+        //    else
+        //    {
+        //        inventoriesQuery = inventoriesQuery.Where(i => i.IsPublic);
+        //    }
+        //}
 
         // Получаем 5 самых популярных по количеству Items
         var inventories = await inventoriesQuery

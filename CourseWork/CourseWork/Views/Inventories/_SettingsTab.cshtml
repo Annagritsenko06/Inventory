@@ -16,7 +16,7 @@
             </div>
 
             <!-- Категория -->
-                <label asp-for="Category" class="form-label">@L["Category"]</label>
+                
                 <div class="col-md-6">
                     <label asp-for="Category" class="form-label">@L["Category"]</label>
                 <select asp-for="Category" asp-items="Html.GetEnumSelectList<CourseWork.Models.Inventories.InventoryCategory>()" class="form-select"></select>
@@ -121,16 +121,16 @@
             badge.className = 'badge bg-light text-dark border px-2 py-1';
             badge.textContent = tag;
 
-            // const removeBtn = document.createElement('button');
-            // removeBtn.type = 'button';
-            // removeBtn.className = 'btn-close btn-close-sm ms-1';
-            // removeBtn.onclick = () => {
-            //     tags = tags.filter(t => t !== tag);
-            //     updateHiddenInput();
-            //     renderTags();
-            // };
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn-close btn-close-sm ms-1';
+            removeBtn.onclick = () => {
+                tags = tags.filter(t => t !== tag);
+                updateHiddenInput();
+                renderTags();
+            };
 
-            //badge.appendChild(removeBtn);
+            badge.appendChild(removeBtn);
             selectedTags.appendChild(badge);
         });
     }

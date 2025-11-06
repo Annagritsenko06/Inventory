@@ -114,11 +114,12 @@
                         <div class="d-flex flex-wrap gap-2">
                             @foreach (var tag in tags)
                             {
-                                <a asp-controller="Inventories" asp-action="ByTag" asp-route-tag="@tag"
+                                <a asp-controller="Inventories" asp-action="ByTag" asp-route-tag="@tag.ToString()"
                                    class="badge rounded-pill bg-light text-secondary border px-3 py-2">
-                                    <i class="fas fa-hashtag me-1"></i>@tag
+                                    <i class="fas fa-hashtag me-1"></i>@tag.ToString()
                                 </a>
                             }
+
                         </div>
                     }
                     else

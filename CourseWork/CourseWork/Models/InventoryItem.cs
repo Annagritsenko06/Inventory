@@ -14,6 +14,7 @@ namespace CourseWork.Models
         public string SortOrder { get; set; } = "name";
         public List<User> AllowedUsers { get; set; }
         public List<User> UsersWithoutAccess { get; set; }
+        public bool CanEdit { get; set; }
 
     }
     public class InventoryItem
@@ -25,7 +26,6 @@ namespace CourseWork.Models
         public Inventories? Inventory { get; set; }
 
 
-        // Custom editable user-facing ID
         [MaxLength(200)]
         [Column("custom_id")]
         public string CustomId { get; set; } = string.Empty;
@@ -36,17 +36,13 @@ namespace CourseWork.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Column("values_json")]
-        // Store field values as JSON to avoid many DB columns
         public string ValuesJson { get; set; } = JsonSerializer.Serialize(new { });
 
-        // Version for optimistic locking
         [Column("version")]
         public int Version { get; set; } = 1;
 
-        // Likes functionality
         public ICollection<ItemLike> Likes { get; set; } = new List<ItemLike>();
        
-
         public T? GetValues<T>() where T : class
         {
             return JsonSerializer.Deserialize<T>(ValuesJson);
