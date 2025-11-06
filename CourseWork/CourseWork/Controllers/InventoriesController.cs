@@ -83,15 +83,19 @@ namespace InventoryManager.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveSettings(Inventories model, IFormFile? imageFile, string? Tags)
         {
-            var user = await _userManager.GetUserAsync(User); // Получаем текущего пользователя
+            var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
-            //var inv = await _db.Inventories.FindAsync(model.Id);
+
+            // Пытаемся найти существующий инвентарь
             var inv = await _db.Inventories
-        .Include(i => i.Tags)
-        .FirstOrDefaultAsync(i => i.Id == model.Id);
-            if (inv == null)
+                .Include(i => i.Tags)
+                .FirstOrDefaultAsync(i => i.Id == model.Id);
+
+            var isNew = inv == null;
+
+            if (isNew)
             {
-                // Создаем новый объект, если не найден существующий
+                // Новый инвентарь
                 inv = new Inventories
                 {
                     Name = model.Name,
@@ -102,55 +106,57 @@ namespace InventoryManager.Controllers
                     IsPublic = model.IsPublic,
                     CustomIdFormatJson = model.CustomIdFormatJson
                 };
+
                 _db.Inventories.Add(inv);
+                await _db.SaveChangesAsync(); // сохраняем, чтобы EF присвоил Id
             }
             else
             {
-                // Обновляем существующий
+                // Существующий инвентарь
                 inv.Name = model.Name;
                 inv.Description = model.Description;
                 inv.Category = model.Category;
                 inv.OwnerId = user.Id;
-                if(imageFile != null && imageFile.Length > 0)
-                {
-                    Console.WriteLine($"Загружаем изображение: {imageFile.FileName}");
-                    var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-                    if (!Directory.Exists(uploadsDir))
-                        Directory.CreateDirectory(uploadsDir);
-
-                    var fileName = Path.GetFileName(imageFile.FileName);
-                    var filePath = Path.Combine(uploadsDir, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        imageFile.CopyTo(stream);
-                    }
-
-                    inv.ImageUrl = "/images/" + fileName;
-                }
-
                 inv.IsPublic = model.IsPublic;
                 inv.CustomIdFormatJson = model.CustomIdFormatJson;
-                if (!string.IsNullOrEmpty(Tags))
+            }
+
+            // Работа с изображением
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
+
+                var fileName = Path.GetFileName(imageFile.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    imageFile.CopyTo(stream);
+
+                inv.ImageUrl = "/images/" + fileName;
+            }
+
+            // Работа с тегами
+            if (!string.IsNullOrEmpty(Tags))
+            {
+                var tagNames = Tags
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Distinct()
+                    .ToList();
+
+                // Загружаем существующие связи
+                await _db.Entry(inv).Collection(i => i.Tags).LoadAsync();
+                inv.Tags.Clear();
+
+                foreach (var name in tagNames)
                 {
-                    var tagNames = Tags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                       .Distinct()
-                                       .ToList();
-
-                    inv.Tags.Clear();
-
-                    foreach (var name in tagNames)
+                    var tag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == name);
+                    if (tag == null)
                     {
-                        var tag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == name);
-                        if (tag == null)
-                        {
-                            tag = new InventoryTag { Name = name };
-                            _db.InventoryTags.Add(tag);
-                        }
-                        inv.Tags.Add(tag);
+                        tag = new InventoryTag { Name = name };
+                        _db.InventoryTags.Add(tag);
                     }
+                    inv.Tags.Add(tag); // EF создаст запись в inventory_tag_links
                 }
-                _db.Update(inv);
             }
 
             await _db.SaveChangesAsync();
@@ -158,7 +164,8 @@ namespace InventoryManager.Controllers
             return RedirectToAction("Details", new { id = inv.Id });
         }
 
-        
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BulkAction(int inventoryId, string action, int[] selectedIds)
@@ -417,6 +424,7 @@ namespace InventoryManager.Controllers
                     // создаём новый тег и добавляем его в контекст
                     existingTag = new InventoryTag { Name = tagName };
                     _db.InventoryTags.Add(existingTag);
+                    await _db.SaveChangesAsync();
                 }
 
                 // связываем тег с инвентарём
@@ -436,14 +444,20 @@ namespace InventoryManager.Controllers
             if (string.IsNullOrWhiteSpace(tag))
                 return RedirectToAction("Index", "Home");
 
+
+            // Получаем инвентари, которые имеют этот тег
             var inventories = await _db.Inventories
                 .Include(i => i.Items)
-                .Where(i => i.Category.ToString() == tag)
+                .Include(i => i.Tags) // включаем теги
+                .Where(i => i.Tags.Any(t => t.Name == tag))
                 .ToListAsync();
 
             ViewBag.Tag = tag;
             return View("Index", inventories);
         }
+
+
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -606,18 +620,7 @@ namespace InventoryManager.Controllers
         }
 
 
-        //[HttpPost]
-        //public IActionResult ReorderFields([FromBody] List<int> orderedIds)
-        //{
-        //    for (int i = 0; i < orderedIds.Count; i++)
-        //    {
-        //        var field = _db.InventoryFields.FirstOrDefault(f => f.Id == orderedIds[i]);
-        //        if (field != null)
-        //            field.Order = i;
-        //    }
-        //    _db.SaveChanges();
-        //    return Ok();
-        //}
+        
         [HttpGet]
         public IActionResult AddItem(int inventoryId)
         {

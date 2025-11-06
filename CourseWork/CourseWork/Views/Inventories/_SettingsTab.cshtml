@@ -59,8 +59,9 @@
                     {
                         <span class="badge bg-light text-dark border px-2 py-1">@tag.Name</span>
                     }
-                    <input type="hidden" name="Tags" id="hiddenTags" value="@string.Join(",", Model.Tags.Select(t => t.Name))" />
-                </div>
+                       </div>
+                <input type="hidden" name="Tags" id="hiddenTags" value="@string.Join(",", Model.Tags.Select(t => t.Name))" />
+
             </div>
 
         </div>
@@ -126,7 +127,7 @@
             removeBtn.className = 'btn-close btn-close-sm ms-1';
             removeBtn.onclick = () => {
                 tags = tags.filter(t => t !== tag);
-                updateHiddenInput();
+                    updateHiddenInputTags();
                 renderTags();
             };
 
@@ -135,7 +136,7 @@
         });
     }
 
-    function updateHiddenInput() {
+    function updateHiddenInputTags() {
         hiddenTags.value = tags.join(',');
     }
 
@@ -154,7 +155,7 @@
             item.textContent = tag;
             item.onclick = () => {
                 if (!tags.includes(tag)) tags.push(tag);
-                updateHiddenInput();
+                    updateHiddenInputTags();
                 renderTags();
                 tagInput.value = '';
                 tagSuggestions.innerHTML = '';
@@ -169,7 +170,7 @@
             const val = tagInput.value.trim();
             if (val && !tags.includes(val)) {
                 tags.push(val);
-                updateHiddenInput();
+                    updateHiddenInputTags();
                 renderTags();
             }
             tagInput.value = '';

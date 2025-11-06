@@ -24,7 +24,7 @@ namespace CourseWork.Services
             });
             modelBuilder.Entity<InventoryField>()
     .Property(f => f.Id)
-    .UseIdentityAlwaysColumn(); // или UseSerialColumn() для PostgreSQL
+    .UseIdentityAlwaysColumn(); // 
 
             modelBuilder.Entity<InventoryItem>(b =>
             {
@@ -51,27 +51,18 @@ namespace CourseWork.Services
         .Property(i => i.Category)
         .HasConversion<string>();
 
-        //    modelBuilder.Entity<Inventories>()
-        //.HasMany(i => i.Tags)
-        //.WithMany(t => t.Inventories)
-        //.UsingEntity<Dictionary<string, object>>(
-        //    "inventory_tag_links",
-        //    j => j.HasOne<InventoryTag>().WithMany().HasForeignKey("tag_id"),
-        //    j => j.HasOne<Inventories>().WithMany().HasForeignKey("inventory_id")
-        //    );
+
             modelBuilder.Entity<Inventories>()
         .HasMany(i => i.Tags)
         .WithMany(t => t.Inventories)
         .UsingEntity(j => j.ToTable("inventory_tag_links"));
 
-            //    // ItemLike configuration
             modelBuilder.Entity<ItemLike>(b =>
             {
                 b.ToTable("item_likes");
                 b.HasIndex(i => new { i.ItemId, i.UserId }).IsUnique();
             });
 
-            // InventoryDiscussion configuration
             modelBuilder.Entity<InventoryDiscussion>(b =>
             {
                 b.ToTable("inventory_discussions");
@@ -79,7 +70,7 @@ namespace CourseWork.Services
             modelBuilder.Entity<Inventories>()
     .HasMany(i => i.AllowedUsers)
     .WithMany(u => u.AccessibleInventories)
-    .UsingEntity(j => j.ToTable("InventoriesUser")); // имя таблицы
+    .UsingEntity(j => j.ToTable("InventoriesUser")); 
 
             modelBuilder.Entity<AccessInventory>()
     .HasOne(a => a.user)

@@ -27,33 +27,20 @@ public class HomeController : Controller
             .Include(i => i.Items)
             .AsQueryable();
 
-        // Фильтруем в зависимости от роли
-        //if (!isAdmin)
-        //{
-        //    if (user != null)
-        //    {
-        //        inventoriesQuery = inventoriesQuery.Where(i =>
-        //            i.IsPublic || i.OwnerId == user.Id);
-        //    }
-        //    else
-        //    {
-        //        inventoriesQuery = inventoriesQuery.Where(i => i.IsPublic);
-        //    }
-        //}
 
         // Получаем 5 самых популярных по количеству Items
         var inventories = await inventoriesQuery
             .OrderByDescending(i => i.Items.Count)
-            .Take(5)
+            .Take(10)
             .ToListAsync();
 
-        // Теги (категории)
-        var tags = await _context.Inventories
-            .Where(i => !string.IsNullOrEmpty(i.Category.ToString()))
-            .Select(i => i.Category)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToListAsync();
+        var tags = await _context.InventoryTags
+    .Include(t => t.Inventories)
+    .Where(t => t.Inventories.Any()) // только теги, у которых есть связанные инвентари
+    .OrderByDescending(t => t.Inventories.Count)
+    .Select(t => t.Name)
+    .Take(10)
+    .ToListAsync();
 
         ViewBag.Tags = tags;
 

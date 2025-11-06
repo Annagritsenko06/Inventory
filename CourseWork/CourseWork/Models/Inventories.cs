@@ -26,7 +26,7 @@ namespace CourseWork.Models
         [Column("is_public")]
         public bool IsPublic { get; set; }
         [Column("image_url")]
-        public string? ImageUrl { get; set; } // ссылка в облаке
+        public string? ImageUrl { get; set; } 
         [Column("custom_id_format_json", TypeName = "jsonb")]
 
         public string? CustomIdFormatJson { get; set; }
@@ -37,7 +37,7 @@ namespace CourseWork.Models
 
           public ICollection<InventoryField> Fields { get; set; } = new List<InventoryField>();
         public ICollection<InventoryTag> Tags { get; set; } = new List<InventoryTag>();
-      [NotMapped] // EF не будет пытаться вставлять AllowedUsers напрямую
+      [NotMapped] 
     public IEnumerable<User> AllowedUsers => access_list.Select(a => a.user);
 
 
