@@ -36,7 +36,7 @@ public class HomeController : Controller
 
         var tags = await _context.InventoryTags
     .Include(t => t.Inventories)
-    .Where(t => t.Inventories.Any()) // только теги, у которых есть связанные инвентари
+    .Where(t => t.Inventories.Any()) 
     .OrderByDescending(t => t.Inventories.Count)
     .Select(t => t.Name)
     .Take(10)

@@ -145,7 +145,7 @@ namespace InventoryManager.Controllers
 
                 // Загружаем существующие связи
                 await _db.Entry(inv).Collection(i => i.Tags).LoadAsync();
-                inv.Tags.Clear();
+                //inv.Tags.Clear();
 
                 foreach (var name in tagNames)
                 {
@@ -399,44 +399,56 @@ namespace InventoryManager.Controllers
 
             return RedirectToAction("Details", new { id = field.InventoryId });
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveTags(int InventoryId, List<string> Tags)
+        public async Task<IActionResult> SaveTags(int id, string? Tags)
         {
-            var inventory = await _db.Inventories
-                .Include(i => i.Tags)
-                .FirstOrDefaultAsync(i => i.Id == InventoryId);
+            // Загружаем инвентарь и текущие теги
+            var inv = await _db.Inventories
+                .Include(i => i.Tags) // обязательно, чтобы EF отслеживал коллекцию
+                .FirstOrDefaultAsync(i => i.Id == id);
 
-            if (inventory == null)
+            if (inv == null)
                 return NotFound();
 
-            // Удаляем старые связи
-            inventory.Tags.Clear();
+            // Гарантированно подгружаем коллекцию
+            await _db.Entry(inv).Collection(i => i.Tags).LoadAsync();
 
-            foreach (var tagName in Tags.Where(t => !string.IsNullOrWhiteSpace(t)))
+            if (!string.IsNullOrEmpty(Tags))
             {
-                var existingTag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == tagName);
+                // Разделяем введённые теги
+                var tagNames = Tags
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Distinct()
+                    .ToList();
 
-                if (existingTag == null)
+                foreach (var name in tagNames)
                 {
-                    // создаём новый тег и добавляем его в контекст
-                    existingTag = new InventoryTag { Name = tagName };
-                    _db.InventoryTags.Add(existingTag);
-                    await _db.SaveChangesAsync();
-                }
+                    // Ищем существующий тег
+                    var tag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == name);
 
-                // связываем тег с инвентарём
-                inventory.Tags.Add(existingTag);
+                    if (tag == null)
+                    {
+                        // Если тег новый, добавляем его в контекст и сохраняем
+                        tag = new InventoryTag { Name = name };
+                        _db.InventoryTags.Add(tag);
+                        await _db.SaveChangesAsync(); // сохраняем, чтобы EF присвоил Id
+                    }
+
+                    // Добавляем связь только если её ещё нет
+                    if (!inv.Tags.Any(t => t.Id == tag.Id))
+                    {
+                        inv.Tags.Add(tag); // EF создаст запись в таблице связи
+                    }
+                }
             }
 
+            // Сохраняем все изменения (новые связи и новые теги)
             await _db.SaveChangesAsync();
 
             TempData["Success"] = "Теги сохранены!";
-            return RedirectToAction("Details", new { id = InventoryId });
+            return RedirectToAction("Details", new { id = inv.Id });
         }
-
 
 
         public async Task<IActionResult> ByTag(string tag)

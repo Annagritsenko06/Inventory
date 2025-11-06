@@ -336,24 +336,22 @@
         <!-- ========== TAGS ========== -->
         <div class="tab-pane fade" id="tags">
             <form asp-action="SaveTags" method="post">
-                <input type="hidden" name="InventoryId" value="@Model.Inventory.Id" />
+                <input type="hidden" name="id" value="@Model.Inventory.Id" />
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">@L["Tags"]</label>
-
-                    @if (Model.Inventory.Tags != null && Model.Inventory.Tags.Any())
+                <label class="form-label">Теги</label>
+                <input id="tagInput" class="form-control" placeholder="Введите тег..." />
+                <div id="tagSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+                <div id="selectedTags" class="mt-2 d-flex flex-wrap gap-1">
+                    @foreach (var tag in Model.Inventory.Tags)
                     {
-                        foreach (var tag in Model.Inventory.Tags)
-                        {
-                            <input type="text" name="Tags" value="@tag.Name" class="form-control mb-1" />
-                        }
+                        <span class="badge bg-light text-dark border px-2 py-1">@tag.Name</span>
                     }
-
-                    <input type="text" name="Tags" class="form-control" placeholder="@L["Enter_new_tag"]" />
                 </div>
+                <input type="hidden" name="Tags" id="hiddenTags" value="@string.Join(",", Model.Inventory.Tags.Select(t => t.Name))" />
 
-                <button type="submit" class="btn btn-success">💾 @L["Save_tags"]</button>
+                <button type="submit" class="btn btn-success mt-2">💾 Сохранить</button>
             </form>
+
         </div>
 
         <!-- ========== FIELDS ========== -->
@@ -451,6 +449,80 @@ function toggleAll(source) {
                 }
             });
         });
+                    //автозаполнение тегов
+
+            const tagInput = document.getElementById('tagInput');
+            const tagSuggestions = document.getElementById('tagSuggestions');
+            const selectedTags = document.getElementById('selectedTags');
+            const hiddenTags = document.getElementById('hiddenTags');
+
+            let tags = hiddenTags.value ? hiddenTags.value.split(',').map(t => t.trim()).filter(t => t) : [];
+
+            function renderTags() {
+                selectedTags.innerHTML = '';
+                tags.forEach(tag => {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-light text-dark border px-2 py-1';
+                    badge.textContent = tag;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn-close btn-close-sm ms-1';
+                    removeBtn.onclick = () => {
+                        tags = tags.filter(t => t !== tag);
+                            updateHiddenInputTags();
+                        renderTags();
+                    };
+
+                    badge.appendChild(removeBtn);
+                    selectedTags.appendChild(badge);
+                });
+            }
+
+            function updateHiddenInputTags() {
+                hiddenTags.value = tags.join(',');
+            }
+
+            tagInput.addEventListener('input', async () => {
+                const query = tagInput.value.trim();
+                tagSuggestions.innerHTML = '';
+                if (!query) return;
+
+                const res = await fetch(`/Inventories/GetTagSuggestions?term=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                data.forEach(tag => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = tag;
+                    item.onclick = () => {
+                        if (!tags.includes(tag)) tags.push(tag);
+                            updateHiddenInputTags();
+                        renderTags();
+                        tagInput.value = '';
+                        tagSuggestions.innerHTML = '';
+                    };
+                    tagSuggestions.appendChild(item);
+                });
+            });
+
+            tagInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = tagInput.value.trim();
+                    if (val && !tags.includes(val)) {
+                        tags.push(val);
+                            updateHiddenInputTags();
+                        renderTags();
+                    }
+                    tagInput.value = '';
+                    tagSuggestions.innerHTML = '';
+                }
+            });
+
+            renderTags();
+
 
     </script>
 }
