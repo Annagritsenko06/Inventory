@@ -553,6 +553,7 @@ namespace InventoryManager.Controllers
             int textMultiCount = existingFields.Count(f => f.Type == FieldType.TextMulti);
             int numberCount = existingFields.Count(f => f.Type == FieldType.Number);
             int booleanCount = existingFields.Count(f => f.Type == FieldType.Boolean);
+            int LinkCount = existingFields.Count(f => f.Type == FieldType.ImageLink);
 
             string errorMessage = null;
             switch (vm.FieldForm.Type)
@@ -569,6 +570,9 @@ namespace InventoryManager.Controllers
                
                 case FieldType.Boolean:
                     if (booleanCount >= 3) errorMessage = "Нельзя добавить больше 3 логических полей";
+                    break;
+                case FieldType.ImageLink:
+                    if (booleanCount >= 3) errorMessage = "Нельзя добавить больше 3 полей для ссылок";
                     break;
                 default:
                     errorMessage = "Неизвестный тип поля";
