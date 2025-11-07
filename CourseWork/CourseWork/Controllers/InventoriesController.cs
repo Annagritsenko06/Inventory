@@ -545,6 +545,42 @@ namespace InventoryManager.Controllers
                 return RedirectToAction("Details", new { id = vm.FieldForm.InventoryId });
             }
 
+            var existingFields = _db.InventoryFields
+                .Where(f => f.InventoryId == vm.FieldForm.InventoryId)
+                .ToList();
+
+            int textSingleCount = existingFields.Count(f => f.Type == FieldType.TextSingle);
+            int textMultiCount = existingFields.Count(f => f.Type == FieldType.TextMulti);
+            int numberCount = existingFields.Count(f => f.Type == FieldType.Number);
+            int booleanCount = existingFields.Count(f => f.Type == FieldType.Boolean);
+
+            string errorMessage = null;
+            switch (vm.FieldForm.Type)
+            {
+                case FieldType.TextSingle:
+                    if (textSingleCount >= 3) errorMessage = "Нельзя добавить больше 3 однострочных текстовых полей";
+                    break;
+                case FieldType.TextMulti:
+                    if (textMultiCount >= 3) errorMessage = "Нельзя добавить больше 3 многострочных текстовых полей";
+                    break;
+                case FieldType.Number:
+                    if (numberCount >= 3) errorMessage = "Нельзя добавить больше 3 числовых полей";
+                    break;
+               
+                case FieldType.Boolean:
+                    if (booleanCount >= 3) errorMessage = "Нельзя добавить больше 3 логических полей";
+                    break;
+                default:
+                    errorMessage = "Неизвестный тип поля";
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                TempData["Error"] = errorMessage;
+                return RedirectToAction("Details", new { id = vm.FieldForm.InventoryId });
+            }
+
             var newField = new InventoryField
             {
                 InventoryId = vm.FieldForm.InventoryId,
@@ -561,6 +597,7 @@ namespace InventoryManager.Controllers
             TempData["Success"] = "Поле добавлено";
             return RedirectToAction("Details", new { id = vm.FieldForm.InventoryId });
         }
+
 
 
         [HttpGet("GetField")]
