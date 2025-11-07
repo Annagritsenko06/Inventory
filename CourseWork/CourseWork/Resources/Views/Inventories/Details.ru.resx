@@ -195,6 +195,9 @@
   <data name="No_users_with_access" xml:space="preserve">
     <value>Нет пользователей с доступом</value>
   </data>
+  <data name="Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
   <data name="Other" xml:space="preserve">
     <value>Другое</value>
   </data>

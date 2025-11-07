@@ -128,7 +128,23 @@
                                     string value = (index >= 0 && index < item.FieldValues.Count)
                                     ? item.FieldValues[index]
                                     : "-";
-                                    <td>@value</td>
+                                    <td>
+                                        @if (field.Type == CourseWork.Models.FieldType.ImageLink)
+                                        {
+                                            if (!string.IsNullOrEmpty(value))
+                                            {
+                                                <a href="@value" target="_blank">@L["Open"]</a>
+                                            }
+                                            else
+                                            {
+                                                @("-")
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @value
+                                        }
+                                    </td>
                                 }
                                 @if (canEdit){
                                 <td>
