@@ -81,7 +81,7 @@ namespace InventoryManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveSettings(Inventories model, IFormFile? imageFile, string? Tags)
+        public async Task<IActionResult> SaveSettings(Inventories model, string? Tags) // IFormFile? imageFile,
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
@@ -117,24 +117,12 @@ namespace InventoryManager.Controllers
                 inv.Description = model.Description;
                 inv.Category = model.Category;
                 inv.OwnerId = user.Id;
+                inv.ImageUrl = model.ImageUrl;
                 inv.IsPublic = model.IsPublic;
                 inv.CustomIdFormatJson = model.CustomIdFormatJson;
             }
 
-            // Работа с изображением
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-                if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
-
-                var fileName = Path.GetFileName(imageFile.FileName);
-                var filePath = Path.Combine(uploadsDir, fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    imageFile.CopyTo(stream);
-
-                inv.ImageUrl = "/images/" + fileName;
-            }
-
+            
             // Работа с тегами
             if (!string.IsNullOrEmpty(Tags))
             {
@@ -163,8 +151,6 @@ namespace InventoryManager.Controllers
 
             return RedirectToAction("Details", new { id = inv.Id });
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -399,56 +385,6 @@ namespace InventoryManager.Controllers
 
             return RedirectToAction("Details", new { id = field.InventoryId });
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveTags(int id, string? Tags)
-        {
-            // Загружаем инвентарь и текущие теги
-            var inv = await _db.Inventories
-                .Include(i => i.Tags) // обязательно, чтобы EF отслеживал коллекцию
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (inv == null)
-                return NotFound();
-
-            // Гарантированно подгружаем коллекцию
-            await _db.Entry(inv).Collection(i => i.Tags).LoadAsync();
-
-            if (!string.IsNullOrEmpty(Tags))
-            {
-                // Разделяем введённые теги
-                var tagNames = Tags
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    .Distinct()
-                    .ToList();
-
-                foreach (var name in tagNames)
-                {
-                    // Ищем существующий тег
-                    var tag = await _db.InventoryTags.FirstOrDefaultAsync(t => t.Name == name);
-
-                    if (tag == null)
-                    {
-                        // Если тег новый, добавляем его в контекст и сохраняем
-                        tag = new InventoryTag { Name = name };
-                        _db.InventoryTags.Add(tag);
-                        await _db.SaveChangesAsync(); // сохраняем, чтобы EF присвоил Id
-                    }
-
-                    // Добавляем связь только если её ещё нет
-                    if (!inv.Tags.Any(t => t.Id == tag.Id))
-                    {
-                        inv.Tags.Add(tag); // EF создаст запись в таблице связи
-                    }
-                }
-            }
-
-            // Сохраняем все изменения (новые связи и новые теги)
-            await _db.SaveChangesAsync();
-
-            TempData["Success"] = "Теги сохранены!";
-            return RedirectToAction("Details", new { id = inv.Id });
-        }
 
 
         public async Task<IActionResult> ByTag(string tag)
@@ -468,8 +404,21 @@ namespace InventoryManager.Controllers
             return View("Index", inventories);
         }
 
+        public async Task<IActionResult> ByTagCategories(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return RedirectToAction("Index", "Home");
 
-        
+            var inventories = await _db.Inventories
+                .Include(i => i.Items)
+                .Where(i => i.Category.ToString() == tag)
+                .ToListAsync();
+
+            ViewBag.Tag = tag;
+            return View("Index", inventories);
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

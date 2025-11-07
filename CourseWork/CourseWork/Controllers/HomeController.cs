@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using CourseWork.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
@@ -22,16 +21,13 @@ public class HomeController : Controller
         var user = await _userManager.GetUserAsync(User);
         var isAdmin = user != null && await _userManager.IsInRoleAsync(user, "Admin");
 
-        // Основной запрос с подгрузкой элементов
         var inventoriesQuery = _context.Inventories
             .Include(i => i.Items)
             .AsQueryable();
 
-
-        // Получаем 5 самых популярных по количеству Items
         var inventories = await inventoriesQuery
             .OrderByDescending(i => i.Items.Count)
-            .Take(10)
+            .Take(5)
             .ToListAsync();
 
         var tags = await _context.InventoryTags

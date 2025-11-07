@@ -39,31 +39,6 @@ namespace CourseWork.Controllers
         [HttpGet]
         public IActionResult Register() => View();
 
-        //[HttpPost]
-        //public async Task<IActionResult> Register(string email, string password)
-        //{
-        //    // Создаем пользователя и сразу заполняем доп. поля
-        //    var user = new User
-        //    {
-        //        UserName = email,
-        //        Email = email,
-        //        Status = "Active", // можно задать значение по умолчанию
-        //        RegistrationTime = DateTime.UtcNow // сохраняем время регистрации
-        //    };
-
-        //    var result = await _userManager.CreateAsync(user, password);
-
-        //    if (result.Succeeded)
-        //    {
-        //        await _signInManager.SignInAsync(user, false);
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    foreach (var error in result.Errors)
-        //        ModelState.AddModelError("", error.Description);
-
-        //    return View();
-        //}
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password)
         {
@@ -247,7 +222,6 @@ namespace CourseWork.Controllers
                 await _roleManager.CreateAsync(role);
             }
 
-            // Добавляем пользователя в роль Admin
             if (!await _userManager.IsInRoleAsync(adminUser, "Admin"))
             {
                 await _userManager.AddToRoleAsync(adminUser, "Admin");

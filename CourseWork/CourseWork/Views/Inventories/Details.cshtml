@@ -60,8 +60,7 @@
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#stats">📊 @L["Statistics"]</button></li>
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit">⚙️ @L["General_settings"]</button></li>
             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#access">🔐 @L["Access"]</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tags">🏷️ @L["Tags"]</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#elements">🧱 @L["Fields"]</button></li>
+             <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#elements">🧱 @L["Fields"]</button></li>
         }
     </ul>
 </div>
@@ -183,48 +182,44 @@
 
     @if (isOwnerOrAdmin)
     {
-        <!-- ================= EDIT SETTINGS ================= -->
         <div class="tab-pane fade" id="edit">
-            <form asp-action="SaveSettings" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="Id" value="@Model.Inventory.Id" />
+            @using (Html.BeginForm("SaveSettings", "Inventories", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => m.Inventory.Id, new { Name = "Id" })
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Name"]</label>
-                    <input type="text" name="Name" value="@Model.Inventory.Name" class="form-control" required />
+                    <input asp-for="Inventory.Name" name="Name" class="form-control" required />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Description_Markdown"]</label>
-                    <textarea name="Description" class="form-control" rows="5">@Model.Inventory.Description</textarea>
+                    <textarea asp-for="Inventory.Description" name="Description" class="form-control" rows="5"></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Category"]</label>
-                    <select name="Category" class="form-select">
+                    <select asp-for="Inventory.Category" name="Category" class="form-select">
                         @foreach (var c in Enum.GetValues(typeof(CourseWork.Models.Inventories.InventoryCategory)))
                         {
                             <option value="@c" selected="@(Model.Inventory.Category == (CourseWork.Models.Inventories.InventoryCategory)c)">
-                                @* @L[c.ToString()] *@
                                 @c
                             </option>
                         }
                     </select>
                 </div>
-               
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">@L["Image"]</label>
-                    <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewImage(event)" />
-                    <div class="mt-2">
-                        @if (!string.IsNullOrEmpty(Model.Inventory.ImageUrl))
-                        {
-                            <img id="imagePreview" src="@Model.Inventory.ImageUrl" alt="@L["Image"]" class="img-thumbnail" style="max-height:200px;">
-                        }
-                        else
-                        {
-                            <img id="imagePreview" class="img-thumbnail d-none" style="max-height:200px;">
-                        }
-                    </div>
+                    <label asp-for="Inventory.ImageUrl" class="form-label">@L["ImageUrl"]</label>
+                    <input asp-for="Inventory.ImageUrl" name="ImageUrl" class="form-control" placeholder="https://..." />
+                    @if (!string.IsNullOrEmpty(Model.Inventory.ImageUrl))
+                    {
+                        <div class="mt-2">
+                            <img src="@Model.Inventory.ImageUrl" alt="@L["InventoryImageAlt"]" class="img-thumbnail" style="max-height:150px;" />
+                        </div>
+                    }
                 </div>
 
                 <div class="form-check form-switch mb-3">
@@ -234,8 +229,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">💾 @L["Save_changes"]</button>
-            </form>
+            }
         </div>
+
         <!-- ========== ACCESS ========== -->
         <div class="tab-pane fade" id="access">
             <h5>@L["Access_settings"]</h5>
@@ -333,26 +329,6 @@
             }
         </div>
 
-        <!-- ========== TAGS ========== -->
-        <div class="tab-pane fade" id="tags">
-            <form asp-action="SaveTags" method="post">
-                <input type="hidden" name="id" value="@Model.Inventory.Id" />
-
-                <label class="form-label">Теги</label>
-                <input id="tagInput" class="form-control" placeholder="Введите тег..." />
-                <div id="tagSuggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
-                <div id="selectedTags" class="mt-2 d-flex flex-wrap gap-1">
-                    @foreach (var tag in Model.Inventory.Tags)
-                    {
-                        <span class="badge bg-light text-dark border px-2 py-1">@tag.Name</span>
-                    }
-                </div>
-                <input type="hidden" name="Tags" id="hiddenTags" value="@string.Join(",", Model.Inventory.Tags.Select(t => t.Name))" />
-
-                <button type="submit" class="btn btn-success mt-2">💾 Сохранить</button>
-            </form>
-
-        </div>
 
         <!-- ========== FIELDS ========== -->
         <div class="tab-pane fade" id="elements">
@@ -449,80 +425,6 @@ function toggleAll(source) {
                 }
             });
         });
-                    //автозаполнение тегов
-
-            const tagInput = document.getElementById('tagInput');
-            const tagSuggestions = document.getElementById('tagSuggestions');
-            const selectedTags = document.getElementById('selectedTags');
-            const hiddenTags = document.getElementById('hiddenTags');
-
-            let tags = hiddenTags.value ? hiddenTags.value.split(',').map(t => t.trim()).filter(t => t) : [];
-
-            function renderTags() {
-                selectedTags.innerHTML = '';
-                tags.forEach(tag => {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge bg-light text-dark border px-2 py-1';
-                    badge.textContent = tag;
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.className = 'btn-close btn-close-sm ms-1';
-                    removeBtn.onclick = () => {
-                        tags = tags.filter(t => t !== tag);
-                            updateHiddenInputTags();
-                        renderTags();
-                    };
-
-                    badge.appendChild(removeBtn);
-                    selectedTags.appendChild(badge);
-                });
-            }
-
-            function updateHiddenInputTags() {
-                hiddenTags.value = tags.join(',');
-            }
-
-            tagInput.addEventListener('input', async () => {
-                const query = tagInput.value.trim();
-                tagSuggestions.innerHTML = '';
-                if (!query) return;
-
-                const res = await fetch(`/Inventories/GetTagSuggestions?term=${encodeURIComponent(query)}`);
-                const data = await res.json();
-
-                data.forEach(tag => {
-                    const item = document.createElement('button');
-                    item.type = 'button';
-                    item.className = 'list-group-item list-group-item-action';
-                    item.textContent = tag;
-                    item.onclick = () => {
-                        if (!tags.includes(tag)) tags.push(tag);
-                            updateHiddenInputTags();
-                        renderTags();
-                        tagInput.value = '';
-                        tagSuggestions.innerHTML = '';
-                    };
-                    tagSuggestions.appendChild(item);
-                });
-            });
-
-            tagInput.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ',') {
-                    e.preventDefault();
-                    const val = tagInput.value.trim();
-                    if (val && !tags.includes(val)) {
-                        tags.push(val);
-                            updateHiddenInputTags();
-                        renderTags();
-                    }
-                    tagInput.value = '';
-                    tagSuggestions.innerHTML = '';
-                }
-            });
-
-            renderTags();
-
-
+          
     </script>
 }

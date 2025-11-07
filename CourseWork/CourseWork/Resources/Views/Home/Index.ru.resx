@@ -150,6 +150,12 @@
   <data name="PopularTags" xml:space="preserve">
     <value>Популярные теги</value>
   </data>
+  <data name="Private" xml:space="preserve">
+    <value>Приватный</value>
+  </data>
+  <data name="Public" xml:space="preserve">
+    <value>Публичный</value>
+  </data>
   <data name="Statistics" xml:space="preserve">
     <value>Статистика</value>
   </data>
