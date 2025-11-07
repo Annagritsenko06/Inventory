@@ -189,6 +189,9 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="NoCom" xml:space="preserve">
+    <value>No comments. Be the first to write!</value>
+  </data>
   <data name="No_users_with_access" xml:space="preserve">
     <value>No users with access</value>
   </data>

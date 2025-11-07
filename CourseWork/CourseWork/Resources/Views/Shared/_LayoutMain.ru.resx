@@ -156,7 +156,4 @@
   <data name="WelcomeMessage" xml:space="preserve">
     <value>Добро пожаловать в InventoryManager!</value>
   </data>
-  <data name="NoCom" xml:space="preserve">
-    <value>Нет комментариев. Будьте первым, кто напишет!</value>
-  </data>
 </root>

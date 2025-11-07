@@ -189,6 +189,9 @@
   <data name="Name" xml:space="preserve">
     <value>Название</value>
   </data>
+  <data name="NoCom" xml:space="preserve">
+    <value>Нет комментариев. Будьте первым, кто напишет!</value>
+  </data>
   <data name="No_users_with_access" xml:space="preserve">
     <value>Нет пользователей с доступом</value>
   </data>

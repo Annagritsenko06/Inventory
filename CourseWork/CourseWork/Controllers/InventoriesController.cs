@@ -79,9 +79,30 @@ namespace InventoryManager.Controllers
             ViewBag.SearchTerm = search;
             return View(list);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditInv(InventoryWithItemsViewModel m)
+        {
+            var model = m.Inventory;
+            if (model == null) return BadRequest();
+
+            var inv = _db.Inventories.Include(i => i.Tags).FirstOrDefault(i => i.Id == model.Id);
+            if (inv == null) return NotFound();
+
+            inv.Name = model.Name;
+            inv.Description = model.Description;
+            inv.Category = model.Category;
+            inv.ImageUrl = model.ImageUrl;
+            inv.IsPublic = model.IsPublic;
+
+            
+            _db.Entry(inv).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Details", new { id = inv.Id });
+        }
 
         [HttpPost]
-        public async Task<IActionResult> SaveSettings(Inventories model, string? Tags) // IFormFile? imageFile,
+        public async Task<IActionResult> SaveSettings(Inventories model, string? Tags) 
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
@@ -90,10 +111,9 @@ namespace InventoryManager.Controllers
             var inv = await _db.Inventories
                 .Include(i => i.Tags)
                 .FirstOrDefaultAsync(i => i.Id == model.Id);
+            _logger.LogDebug(inv == null ? "Инвентарь не найден" : $"Найден инвентарь Id={inv.Id}");
 
-            var isNew = inv == null;
-
-            if (isNew)
+            if (inv == null)
             {
                 // Новый инвентарь
                 inv = new Inventories
@@ -116,7 +136,7 @@ namespace InventoryManager.Controllers
                 inv.Name = model.Name;
                 inv.Description = model.Description;
                 inv.Category = model.Category;
-                inv.OwnerId = user.Id;
+                //inv.OwnerId = user.Id;
                 inv.ImageUrl = model.ImageUrl;
                 inv.IsPublic = model.IsPublic;
                 inv.CustomIdFormatJson = model.CustomIdFormatJson;

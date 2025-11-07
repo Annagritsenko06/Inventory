@@ -201,25 +201,25 @@
     @if (isOwnerOrAdmin)
     {
         <div class="tab-pane fade" id="edit">
-            @using (Html.BeginForm("SaveSettings", "Inventories", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            @using (Html.BeginForm("EditInv", "Inventories", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
 
-                @Html.HiddenFor(m => m.Inventory.Id, new { Name = "Id" })
+                @Html.HiddenFor(m => m.Inventory.Id)
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Name"]</label>
-                    <input asp-for="Inventory.Name" name="Name" class="form-control" required />
+                    <input asp-for="Inventory.Name"  class="form-control" required />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Description_Markdown"]</label>
-                    <textarea asp-for="Inventory.Description" name="Description" class="form-control" rows="5"></textarea>
+                    <textarea asp-for="Inventory.Description"  class="form-control" rows="5"></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">@L["Category"]</label>
-                    <select asp-for="Inventory.Category" name="Category" class="form-select">
+                    <select asp-for="Inventory.Category" class="form-select">
                         @foreach (var c in Enum.GetValues(typeof(CourseWork.Models.Inventories.InventoryCategory)))
                         {
                             <option value="@c" selected="@(Model.Inventory.Category == (CourseWork.Models.Inventories.InventoryCategory)c)">
@@ -231,7 +231,7 @@
 
                 <div class="mb-3">
                     <label asp-for="Inventory.ImageUrl" class="form-label">@L["ImageUrl"]</label>
-                    <input asp-for="Inventory.ImageUrl" name="ImageUrl" class="form-control" placeholder="https://..." />
+                    <input asp-for="Inventory.ImageUrl" class="form-control" placeholder="https://..." />
                     @if (!string.IsNullOrEmpty(Model.Inventory.ImageUrl))
                     {
                         <div class="mt-2">
@@ -239,6 +239,10 @@
                         </div>
                     }
                 </div>
+                @* <div class="mb-3"> *@
+                @*     <label class="form-label fw-bold">Tags (через запятую)</label> *@
+                @*     <input type="text" name="Tags" value="@string.Join(',', Model.Inventory.Tags.Select(t => t.Name))" class="form-control" /> *@
+                @* </div> *@
 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" name="IsPublic" value="true" @(Model.Inventory.IsPublic ? "checked" : "") />
