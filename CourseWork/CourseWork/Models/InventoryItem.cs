@@ -15,6 +15,8 @@ namespace CourseWork.Models
         public List<User> AllowedUsers { get; set; }
         public List<User> UsersWithoutAccess { get; set; }
         public bool CanEdit { get; set; }
+        public List<InventoryDiscussion> Discussions { get; set; } = new();
+
 
     }
     public class InventoryItem

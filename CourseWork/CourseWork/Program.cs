@@ -29,12 +29,6 @@ builder.Services.AddAuthentication(options =>
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     googleOptions.CallbackPath = "/signin-google";
     googleOptions.SaveTokens = true;
-})
-.AddFacebook(facebookOptions =>
-{
-    facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-    facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-    facebookOptions.CallbackPath = "/signin-facebook";
 });
 
 // ---------------- Cookie Settings ----------------

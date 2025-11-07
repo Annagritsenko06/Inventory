@@ -156,18 +156,36 @@
 
     @if (canEdit){
     <!-- ================= DISCUSSION ================= -->
-    <div class="tab-pane fade" id="discussion">
-        <div id="messages" class="border rounded p-3 mb-3" style="max-height:300px; overflow:auto;"></div>
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <textarea id="msgText" class="form-control mb-2" rows="3" placeholder="@L["Write_message"]"></textarea>
-            <button id="sendMsg" class="btn btn-outline-secondary">@L["Send"]</button>
-        }
-        else
-        {
-            <div class="alert alert-light">@L["Login_to_participate"]</div>
-        }
-    </div>
+        <div class="tab-pane fade" id="discussion">
+            <div id="messages" class="border rounded p-3 mb-3" style="max-height:300px; overflow:auto;">
+                @if (Model.Discussions != null && Model.Discussions.Any())
+                {
+                    @foreach (var msg in Model.Discussions)
+                    {
+                        <div class="mb-2 p-2 border rounded">
+                            <strong>@msg.User?.UserName</strong>
+                            <small class="text-muted">@msg.CreatedAt.ToLocalTime().ToString("g")</small>
+                            <div class="mt-1">@msg.Message</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted text-center fst-italic">@L["NoCom"]</div>
+                }
+            </div>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <textarea id="msgText" class="form-control mb-2" rows="3" placeholder="@L["Write_message"]"></textarea>
+                <button id="sendMsg" class="btn btn-outline-secondary">@L["Send"]</button>
+            }
+            else
+            {
+                <div class="alert alert-light">@L["Login_to_participate"]</div>
+            }
+        </div>
+
     }
     <!-- ================= CUSTOM ID ================= -->
     <div class="tab-pane fade" id="customid">

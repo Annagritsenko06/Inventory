@@ -792,6 +792,11 @@ namespace InventoryManager.Controllers
                                     && ai.inventory_template_id == id
                                     && ai.type == access_type.Write);
             }
+            var discussions = await _db.InventoryDiscussions
+    .Where(d => d.InventoryId == inventory.Id)
+    .Include(d => d.User)
+    .OrderBy(d => d.CreatedAt)
+    .ToListAsync();
 
             var fieldsVM = new InventoryFieldsVM
             {
@@ -835,7 +840,8 @@ namespace InventoryManager.Controllers
                 SortOrder = sortOrder,
                 AllowedUsers = allowedUsers.ToList(),
                  UsersWithoutAccess = usersWithoutAccess,
-                 CanEdit=canEdit
+                 CanEdit=canEdit,
+                 Discussions=discussions
             };
           
 
