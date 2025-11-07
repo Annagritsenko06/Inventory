@@ -53,7 +53,23 @@ namespace InventoryManager.Controllers
             _db.SaveChanges();
             return RedirectToAction("Details", new { id = model.Id });
         }
-       
+
+        [HttpPost]
+        public IActionResult Delete(int[] selectedIds)
+        {
+            if (selectedIds != null && selectedIds.Length > 0)
+            {
+                _db.Inventories.RemoveRange(_db.Inventories.Where(i => selectedIds.Contains(i.Id)));
+                _db.SaveChanges();
+            }
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer))
+            {
+                return Redirect(referer);
+            }
+            return RedirectToAction("Profile", "Users");
+
+        }
 
 
         public async Task<IActionResult> Index(string search)

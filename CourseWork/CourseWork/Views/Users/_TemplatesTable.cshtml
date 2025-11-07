@@ -1,140 +1,46 @@
-﻿@* @model IEnumerable<CourseWork.Models.Inventories> *@
+﻿
+@using System.Security.Claims
 
-@* @if (Model == null || !Model.Any()) *@
-@* { *@
-@*     <p class="text-muted">Нет доступных инвентарей.</p> *@
-@* } *@
-@* else *@
-@* { *@
-@*     <table class="table table-hover align-middle"> *@
-@*         <thead> *@
-@*             <tr> *@
-@*                 <th scope="col" class="sortable" onclick="sortTable(this, 0)">Название ↑↓</th> *@
-@*                 <th scope="col" class="sortable" onclick="sortTable(this, 1)">Описание ↑↓</th> *@
-@*                 <th scope="col" class="sortable" onclick="sortTable(this, 2)">Категория ↑↓</th> *@
-@*                 <th scope="col">Публичный</th> *@
-@*                 <th scope="col" class="text-center">Действия</th> *@
-@*             </tr> *@
-@*         </thead> *@
-@*         <tbody id="inventoriesTableBody"> *@
-@*             @foreach (var inv in Model) *@
-@*             { *@
-@*                 <tr> *@
-@*                     <td> *@
-@*                         <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id" *@
-@*                            class="fw-bold text-decoration-none"> *@
-@*                             @inv.Name *@
-@*                         </a> *@
-@*                     </td> *@
-@*                     <td>@inv.Description</td> *@
-@*                     <td>@inv.Category</td> *@
-@*                     <td> *@
-@*                         @if (inv.IsPublic) *@
-@*                         { *@
-@*                             <span class="badge bg-success">Да</span> *@
-@*                         } *@
-@*                         else *@
-@*                         { *@
-@*                             <span class="badge bg-secondary">Нет</span> *@
-@*                         } *@
-@*                     </td> *@
-@*                     <td class="text-center"> *@
-@*                         <div class="btn-toolbar justify-content-center" role="toolbar"> *@
-@*                             <div class="btn-group btn-group-sm" role="group"> *@
-@*                                 <button type="button" class="btn btn-outline-primary dropdown-toggle" *@
-@*                                         data-bs-toggle="dropdown" aria-expanded="false"> *@
-@*                                     ⚙️ *@
-@*                                 </button> *@
-@*                                 <ul class="dropdown-menu dropdown-menu-end"> *@
-@*                                     <li> *@
-@*                                         <a class="dropdown-item" *@
-@*                                            asp-controller="Inventories" *@
-@*                                            asp-action="Details" *@
-@*                                            asp-route-id="@inv.Id"> *@
-@*                                             Открыть *@
-@*                                         </a> *@
-@*                                     </li> *@
-
-@*                                     @* Только владелец или администратор может редактировать/удалять *@ 
-@*                                     @if (User.Identity.IsAuthenticated && *@
-@*                                    (User.IsInRole("Admin") || *@
-@*                                    User.FindFirst("sub")?.Value == inv.OwnerId.ToString() || *@
-@*                                    User.Identity.Name == inv.OwnerId.ToString())) *@
-@*                                     { *@
-@*                                         <li> *@
-@*                                             <a class="dropdown-item" *@
-@*                                                asp-controller="Inventories" *@
-@*                                                asp-action="Edit" *@
-@*                                                asp-route-inventoryId="@inv.Id"> *@
-@*                                                 Редактировать *@
-@*                                             </a> *@
-@*                                         </li> *@
-@*                                         <li> *@
-@*                                             <a class="dropdown-item text-danger" *@
-@*                                                asp-controller="Inventories" *@
-@*                                                asp-action="Delete" *@
-@*                                                asp-route-id="@inv.Id"> *@
-@*                                                 Удалить *@
-@*                                             </a> *@
-@*                                         </li> *@
-@*                                     } *@
-@*                                 </ul> *@
-@*                             </div> *@
-@*                         </div> *@
-@*                     </td> *@
-@*                 </tr> *@
-@*             } *@
-@*         </tbody> *@
-@*     </table> *@
-@* } *@
-
-@* @section Scripts { *@
-@*     <script> *@
-@*         function sortTable(header, columnIndex) { *@
-@*             const table = header.closest('table'); *@
-@*             const tbody = table.querySelector('tbody'); *@
-@*             const rows = Array.from(tbody.querySelectorAll('tr')); *@
-@*             const ascending = !header.classList.contains('asc'); *@
-
-@*             rows.sort((a, b) => { *@
-@*                 const cellA = a.children[columnIndex].innerText.trim().toLowerCase(); *@
-@*                 const cellB = b.children[columnIndex].innerText.trim().toLowerCase(); *@
-@*                 return ascending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA); *@
-@*             }); *@
-
-@*             tbody.innerHTML = ''; *@
-@*             rows.forEach(r => tbody.appendChild(r)); *@
-
-@*             table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc')); *@
-@*             header.classList.add(ascending ? 'asc' : 'desc'); *@
-@*         } *@
-@*     </script> *@
-@* } *@
 @model IEnumerable<CourseWork.Models.Inventories>
+@{
+    var userIdString = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+    Guid userId = Guid.Empty;
+    if (!string.IsNullOrEmpty(userIdString))
+    {
+        userId = Guid.Parse(userIdString);
+    }
+
+    bool canDeleteAny = Model.All(inv => inv.OwnerId == userId);
+}
+
 
 @if (Model == null || !Model.Any())
 {
     <p class="text-muted">Нет доступных инвентарей.</p>
+
 }
 else
 {
     <form id="inventoriesForm" method="post">
-        @* <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-2"> *@
-        @*     <div class="btn-toolbar mb-2 mb-sm-0" role="toolbar"> *@
-        @*         <div class="btn-group me-2"> *@
-        @*             <button type="submit"  asp-controller="Inventories"   asp-action="Delete" class="btn btn-sm btn-outline-danger"> *@
-        @*                 Удалить *@
-        @*             </button> *@
-        @*         </div> *@
-        @*     </div> *@
-        @*     <input id="filterTable" placeholder="🔍 Фильтр..." class="form-control w-sm-auto mt-2 mt-sm-0" /> *@
-        @* </div> *@
+       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-2"> 
+            <div class="btn-toolbar mb-2 mb-sm-0" role="toolbar"> 
+                @if(canDeleteAny){
+                 <div class="btn-group me-2"> 
+                    <button type="submit"  asp-controller="Inventories"   asp-action="Delete" class="btn btn-sm btn-outline-danger"> 
+                        Удалить 
+                    </button> 
+               </div>
+                }
+             </div> 
+          </div> 
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
+                        @if (canDeleteAny){
                         <th><input type="checkbox" id="selectAll" class="form-check-input" /></th>
+                       }
                         <th scope="col" class="sortable" onclick="sortTable(this, 1)">Название ↑↓</th>
                         <th scope="col" class="sortable" onclick="sortTable(this, 2)">Описание ↑↓</th>
                         <th scope="col" class="sortable" onclick="sortTable(this, 3)">Категория ↑↓</th>
@@ -145,9 +51,11 @@ else
                     @foreach (var inv in Model)
                     {
                         <tr>
+                            @if (canDeleteAny){
                             <td>
                                 <input type="checkbox" name="selectedIds" value="@inv.Id" class="row-checkbox" />
                             </td>
+                    }
                             <td>
                                 <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id" class="fw-bold text-decoration-none">
                                     @inv.Name
@@ -175,23 +83,28 @@ else
 
 @section Scripts {
     <script>
-               document.addEventListener("DOMContentLoaded", function() {
-            const selectAll = document.getElementById("selectAll");
-            const checkboxes = document.querySelectorAll('input.row-checkbox');
+                      document.addEventListener("DOMContentLoaded", function() {
+        // Для каждой таблицы на странице
+        document.querySelectorAll("table").forEach(function(table) {
+            const selectAll = table.querySelector(".selectAll");
+            if (!selectAll) return;
 
             // Выделение всех чекбоксов
             selectAll.addEventListener("change", function() {
-                checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            });
-
-            // Автоматическое снятие selectAll, если не все выбраны
-            checkboxes.forEach(cb => {
-                cb.addEventListener("change", function() {
-                    const allChecked = Array.from(checkboxes).every(ch => ch.checked);
-                    selectAll.checked = allChecked;
+                table.querySelectorAll('tbody tr input.row-checkbox').forEach(cb => {
+                    cb.checked = selectAll.checked;
                 });
             });
-        });
+
+            // Снятие selectAll, если не все выбраны
+            table.addEventListener("change", function(e) {
+                if (e.target.classList.contains("row-checkbox")) {
+                    const allChecked = Array.from(table.querySelectorAll('tbody tr input.row-checkbox'))
+                                            .every(cb => cb.checked);
+                    selectAll.checked = allChecked;
+                }
+            });
+
 
         // Фильтрация таблицы
         document.getElementById("filterTable")?.addEventListener("input", function() {
