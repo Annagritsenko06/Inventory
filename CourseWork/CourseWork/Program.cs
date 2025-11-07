@@ -195,7 +195,7 @@ using (var scope = app.Services.CreateScope())
 // ---------------- Routes ----------------
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Registration}/{action=Register}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<CourseWork.Hubs.DiscussionHub>("/discussionHub");
 
