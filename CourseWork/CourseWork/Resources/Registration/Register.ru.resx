@@ -117,49 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Admin" xml:space="preserve">
-    <value>Admin</value>
+  <data name="AlreadyHaveAccount" xml:space="preserve">
+    <value>Уже есть аккаунт?</value>
   </data>
-  <data name="Dark" xml:space="preserve">
-    <value>Dark</value>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>Создайте аккаунт</value>
   </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>Адрес электронной почты</value>
   </data>
-  <data name="Inventories" xml:space="preserve">
-    <value>Inventories</value>
+  <data name="EnterEmail" xml:space="preserve">
+    <value>Введите email</value>
   </data>
-  <data name="Language" xml:space="preserve">
-    <value>Language</value>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Введите пароль</value>
   </data>
-  <data name="Light" xml:space="preserve">
-    <value>Light</value>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Пароль</value>
   </data>
-  <data name="Login" xml:space="preserve">
-    <value>Login</value>
+  <data name="Register" xml:space="preserve">
+    <value>Регистрация</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="RegistrationImageAlt" xml:space="preserve">
+    <value>Фон страницы регистрации</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="SignInLink" xml:space="preserve">
+    <value>Войти</value>
   </data>
-  <data name="Search" xml:space="preserve">
-    <value>Search</value>
+  <data name="SignUpButton" xml:space="preserve">
+    <value>Зарегистрироваться</value>
   </data>
-  <data name="Theme" xml:space="preserve">
-    <value>Theme</value>
-  </data>
-  <data name="Users" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome to InventoryManager!</value>
-  </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Russian" xml:space="preserve">
-    <value>Russian</value>
+  <data name="SignUpMessage" xml:space="preserve">
+    <value>Зарегистрируйтесь, чтобы начать работу</value>
   </data>
 </root>

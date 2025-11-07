@@ -156,4 +156,10 @@
   <data name="WelcomeMessage" xml:space="preserve">
     <value>Добро пожаловать в InventoryManager!</value>
   </data>
+  <data name="English" xml:space="preserve">
+    <value>Английский</value>
+  </data>
+  <data name="Russian" xml:space="preserve">
+    <value>Русский</value>
+  </data>
 </root>

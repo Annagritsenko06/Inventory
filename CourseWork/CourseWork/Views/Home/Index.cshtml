@@ -29,7 +29,6 @@
 
 <div class="container">
     <div class="row g-4">
-        <!-- ==================== Последние инвентари ==================== -->
         <div class="col-lg-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pb-0">
@@ -97,7 +96,7 @@
             </div>
         </div>
 
-        <!-- ==================== Правая панель ==================== -->
+     
         <div class="col-lg-4">
             <!-- Теги -->
             <div class="card shadow-sm border-0 mb-4">
@@ -127,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- Статистика -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pb-0">
                     <h5 class="fw-semibold text-dark mb-3">
@@ -137,11 +135,11 @@
                 <div class="card-body text-center pt-0">
                     <div class="row">
                         <div class="col-6 border-end">
-                            <h3 class="text-dark mb-0">@Model.Count()</h3>
+                            <h3 class="text-dark mb-0">@ViewBag.TotalInventories</h3>
                             <small class="text-muted">@L["Inventories"]</small>
                         </div>
                         <div class="col-6">
-                            <h3 class="text-dark mb-0">@Model.Sum(i => i.Items?.Count() ?? 0)</h3>
+                            <h3 class="text-dark mb-0">@ViewBag.TotalElements</h3>
                             <small class="text-muted">@L["Elements"]</small>
                         </div>
                     </div>

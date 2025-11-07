@@ -18,8 +18,8 @@ namespace CourseWork.Models
     public class CustomIdPart
     {
         public CustomIdPartType Type { get; set; }
-        public string Value { get; set; } = string.Empty; // For FixedText
-        public string Format { get; set; } = string.Empty; // For formatting (e.g., leading zeros)
+        public string Value { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty; 
     }
 
     public class CustomIdFormat

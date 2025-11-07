@@ -61,7 +61,6 @@ namespace task5.Controllers
         {
             var users = await _userManager.Users.ToListAsync();
 
-            // Получаем роли для каждого пользователя
             var userRoles = new List<UserRolesViewModel>();
             foreach (var user in users)
             {
@@ -77,7 +76,6 @@ namespace task5.Controllers
         }
 
 
-        // Блокировка выбранных пользователей
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Block(List<string> selectedUsers)
@@ -105,7 +103,6 @@ namespace task5.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Разблокировка выбранных пользователей
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Unblock(List<string> selectedUsers)
@@ -136,7 +133,6 @@ namespace task5.Controllers
             if (selectedUsers == null)
                 return RedirectToAction(nameof(Index));
 
-            // Получаем ID текущего пользователя
             var currentUserId = _userManager.GetUserId(User);
             bool deletedCurrentUser = false;
 
@@ -149,7 +145,6 @@ namespace task5.Controllers
                     {
                         var result = await _userManager.DeleteAsync(user);
 
-                        // Проверяем, удалён ли текущий пользователь
                         if (userId.ToString() == currentUserId && result.Succeeded)
                         {
                             deletedCurrentUser = true;
@@ -158,17 +153,14 @@ namespace task5.Controllers
                 }
             }
 
-            // Если текущий пользователь удалён, перенаправляем его на страницу Login
             if (deletedCurrentUser)
             {
                 return RedirectToAction("Login", "Registration");
             }
 
-            // Иначе остаёмся на Index
             return RedirectToAction(nameof(Index));
         }
 
-        // Изменение статуса пользователя вручную
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> ChangeStatus(string id, string status)
@@ -177,8 +169,6 @@ namespace task5.Controllers
             if (user == null) return NotFound();
 
             user.Status = status;
-
-            // Если статус "Blocked", блокируем пользователя
             if (status.Equals("Blocked", StringComparison.OrdinalIgnoreCase))
             {
                 await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
@@ -192,7 +182,6 @@ namespace task5.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Добавление роли Admin
         [HttpPost]
         public async Task<IActionResult> AddAdminRole(List<string> selectedUsers)
         {
@@ -243,7 +232,6 @@ namespace task5.Controllers
                     }
                    
 
-                    // Если это текущий пользователь — обновляем куки
                     if (user.Id.ToString() == _userManager.GetUserId(User))
                     {
                         await _signInManager.RefreshSignInAsync(user);

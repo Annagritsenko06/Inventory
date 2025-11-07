@@ -5,7 +5,6 @@
 <div class="container mt-4">
     <h2 class="fw-bold mb-4">👤 @L["MyProfile"]</h2>
 
-    <!-- Вкладки -->
     <ul class="nav nav-tabs" id="inventoryTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="owned-tab" data-bs-toggle="tab" data-bs-target="#owned" type="button" role="tab">
@@ -20,7 +19,6 @@
     </ul>
 
     <div class="tab-content mt-3">
-        <!-- Вкладка "Мои инвентари" -->
         <div class="tab-pane fade show active" id="owned" role="tabpanel">
             <div class="mb-3">
                 <input id="searchOwned" placeholder="🔍 @L["Filter_by_inventory_name"]" class="form-control" />
@@ -31,7 +29,6 @@
             </div>
         </div>
 
-        <!-- Вкладка "Инвентари с правом записи" -->
         <div class="tab-pane fade" id="writable" role="tabpanel">
             <div class="mb-3">
                 <input id="searchWritable" placeholder="🔍 @L["Filter_by_inventory_name"]" class="form-control" />
@@ -45,7 +42,6 @@
 
 @section Scripts {
     <script>
-        // Фильтрация вкладки "Мои инвентари"
         document.getElementById("searchOwned").addEventListener("input", function() {
             const filter = this.value.toLowerCase();
             document.querySelectorAll("#ownedContainer tbody tr").forEach(row => {
@@ -53,7 +49,6 @@
             });
         });
 
-        // Фильтрация вкладки "Инвентари с правом записи"
         document.getElementById("searchWritable").addEventListener("input", function() {
             const filter = this.value.toLowerCase();
             document.querySelectorAll("#writableContainer tbody tr").forEach(row => {

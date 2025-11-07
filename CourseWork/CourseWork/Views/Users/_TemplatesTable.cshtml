@@ -1,7 +1,7 @@
-﻿
-@using System.Security.Claims
-
+﻿@using System.Security.Claims
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
 @model IEnumerable<CourseWork.Models.Inventories>
+
 @{
     var userIdString = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
     Guid userId = Guid.Empty;
@@ -13,49 +13,52 @@
     bool canDeleteAny = Model.All(inv => inv.OwnerId == userId);
 }
 
-
 @if (Model == null || !Model.Any())
 {
-    <p class="text-muted">Нет доступных инвентарей.</p>
-
+    <p class="text-muted">@L["NoInventories"]</p>
 }
 else
 {
     <form id="inventoriesForm" method="post">
-       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-2"> 
-            <div class="btn-toolbar mb-2 mb-sm-0" role="toolbar"> 
-                @if(canDeleteAny){
-                 <div class="btn-group me-2"> 
-                    <button type="submit"  asp-controller="Inventories"   asp-action="Delete" class="btn btn-sm btn-outline-danger"> 
-                        Удалить 
-                    </button> 
-               </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-2">
+            <div class="btn-toolbar mb-2 mb-sm-0" role="toolbar">
+                @if (canDeleteAny)
+                {
+                    <div class="btn-group me-2">
+                        <button type="submit" asp-controller="Inventories" asp-action="Delete" class="btn btn-sm btn-outline-danger">
+                            @L["Delete"]
+                        </button>
+                    </div>
                 }
-             </div> 
-          </div> 
+            </div>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
-                        @if (canDeleteAny){
-                        <th><input type="checkbox" id="selectAll" class="form-check-input" /></th>
-                       }
-                        <th scope="col" class="sortable" onclick="sortTable(this, 1)">Название ↑↓</th>
-                        <th scope="col" class="sortable" onclick="sortTable(this, 2)">Описание ↑↓</th>
-                        <th scope="col" class="sortable" onclick="sortTable(this, 3)">Категория ↑↓</th>
-                        <th scope="col">Публичный</th>
+                        @if (canDeleteAny)
+                        {
+                            <th>
+                                <input type="checkbox" id="selectAll" onclick="toggleAll(this)" class="form-check-input" />
+                            </th>
+                        }
+                        <th scope="col" class="sortable" onclick="sortTable(this, 1)">@L["Name"]</th>
+                        <th scope="col" class="sortable" onclick="sortTable(this, 2)">@L["Description"]</th>
+                        <th scope="col" class="sortable" onclick="sortTable(this, 3)">@L["Category"]</th>
+                        <th scope="col">@L["Public"]</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var inv in Model)
                     {
                         <tr>
-                            @if (canDeleteAny){
-                            <td>
-                                <input type="checkbox" name="selectedIds" value="@inv.Id" class="row-checkbox" />
-                            </td>
-                    }
+                            @if (canDeleteAny)
+                            {
+                                <td>
+                                    <input type="checkbox" name="selectedIds" value="@inv.Id" class="row-checkbox form-check-input" />
+                                </td>
+                            }
                             <td>
                                 <a asp-controller="Inventories" asp-action="Details" asp-route-id="@inv.Id" class="fw-bold text-decoration-none">
                                     @inv.Name
@@ -66,11 +69,11 @@ else
                             <td>
                                 @if (inv.IsPublic)
                                 {
-                                    <span class="badge bg-success">Да</span>
+                                    <span class="badge bg-success">@L["Yes"]</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">Нет</span>
+                                    <span class="badge bg-secondary">@L["No"]</span>
                                 }
                             </td>
                         </tr>
@@ -83,39 +86,26 @@ else
 
 @section Scripts {
     <script>
-                      document.addEventListener("DOMContentLoaded", function() {
-        // Для каждой таблицы на странице
-        document.querySelectorAll("table").forEach(function(table) {
-            const selectAll = table.querySelector(".selectAll");
-            if (!selectAll) return;
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('input.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+        }
 
-            // Выделение всех чекбоксов
-            selectAll.addEventListener("change", function() {
-                table.querySelectorAll('tbody tr input.row-checkbox').forEach(cb => {
-                    cb.checked = selectAll.checked;
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('selectAll');
+            const rowCheckboxes = document.querySelectorAll('input.row-checkbox');
+
+            if (selectAll) {
+                rowCheckboxes.forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
+                        selectAll.checked = allChecked;
+                    });
                 });
-            });
-
-            // Снятие selectAll, если не все выбраны
-            table.addEventListener("change", function(e) {
-                if (e.target.classList.contains("row-checkbox")) {
-                    const allChecked = Array.from(table.querySelectorAll('tbody tr input.row-checkbox'))
-                                            .every(cb => cb.checked);
-                    selectAll.checked = allChecked;
-                }
-            });
-
-
-        // Фильтрация таблицы
-        document.getElementById("filterTable")?.addEventListener("input", function() {
-            const filter = this.value.toLowerCase();
-            document.querySelectorAll("tbody tr").forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
-            });
+            }
         });
 
-        // Сортировка таблицы
-        function sortTable(header, columnIndex) {
+        window.sortTable = function(header, columnIndex) {
             const table = header.closest('table');
             const tbody = table.querySelector('tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -132,6 +122,6 @@ else
 
             table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc'));
             header.classList.add(ascending ? 'asc' : 'desc');
-        }
+        };
     </script>
 }

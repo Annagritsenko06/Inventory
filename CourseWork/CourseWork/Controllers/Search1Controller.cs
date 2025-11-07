@@ -18,7 +18,6 @@ public class Search1Controller : Controller
             return View(new SearchResultViewModel());
         }
 
-        // Поиск по Inventories (русский и английский)
         var inventories = _context.Inventories
             .FromSqlRaw(@"
                 SELECT *, ts_rank(""SearchVectorRu"" || ""SearchVectorEn"", 
@@ -30,7 +29,6 @@ public class Search1Controller : Controller
             ", q)
             .ToList();
 
-        // Поиск по InventoryItem (русский и английский)
         var items = _context.InventoryItems
             .FromSqlRaw(@"
                 SELECT *, ts_rank(""SearchVectorRu"" || ""SearchVectorEn"", 

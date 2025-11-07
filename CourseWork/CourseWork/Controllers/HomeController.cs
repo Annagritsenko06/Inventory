@@ -29,7 +29,11 @@ public class HomeController : Controller
             .OrderByDescending(i => i.Items.Count)
             .Take(5)
             .ToListAsync();
+        var totalInventoriesCount = await _context.Inventories.CountAsync();
 
+        var totalElementsCount = await _context.Inventories
+            .SelectMany(i => i.Items)
+            .CountAsync();
         var tags = await _context.InventoryTags
     .Include(t => t.Inventories)
     .Where(t => t.Inventories.Any()) 
@@ -39,7 +43,8 @@ public class HomeController : Controller
     .ToListAsync();
 
         ViewBag.Tags = tags;
-
+        ViewBag.TotalInventories = totalInventoriesCount;
+        ViewBag.TotalElements = totalElementsCount;
         return View(inventories);
     }
     public IActionResult SetTheme(string theme, string returnUrl)

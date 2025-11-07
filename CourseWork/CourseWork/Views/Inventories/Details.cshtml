@@ -24,7 +24,6 @@
          Model.Inventory.OwnerId.ToString() ==
          User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
 
-  //  var categories = new[] { L["Equipment"].Value, L["Furniture"].Value, L["Book"].Value, L["Other"].Value };
     var fieldsVM = Model.Fields ?? new CourseWork.Models.InventoryFieldsVM();
     var fieldsList = fieldsVM.Fields ?? new List<CourseWork.Models.InventoryFieldCreateVM>();
     bool canEdit = Model.CanEdit;
@@ -47,7 +46,6 @@
     </div>
 </div>
 
-<!-- Навигационные вкладки -->
 <div class="overflow-auto">
     <ul class="nav nav-tabs flex-nowrap" id="inventoryTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#items">📦 @L["Items"]</button></li>
@@ -74,7 +72,6 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
 
-            <!-- ====== Тулбар ====== -->
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                     @if (canEdit){
@@ -96,7 +93,7 @@
                 <div class="text-muted small">@L["Select_items_for_actions"]</div>
             </div>
 
-            <!-- ====== Таблица элементов ====== -->
+          
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -134,7 +131,6 @@
                                     <td>@value</td>
                                 }
                                 @if (canEdit){
-                                <!-- ====== Кнопка лайка ====== -->
                                 <td>
                                     <button type="submit"
                                             formaction="@Url.Action("ToggleLike", "Inventories")"
@@ -155,7 +151,7 @@
     </div>
 
     @if (canEdit){
-    <!-- ================= DISCUSSION ================= -->
+ 
         <div class="tab-pane fade" id="discussion">
             <div id="messages" class="border rounded p-3 mb-3" style="max-height:300px; overflow:auto;">
                 @if (Model.Discussions != null && Model.Discussions.Any())
@@ -187,12 +183,11 @@
         </div>
 
     }
-    <!-- ================= CUSTOM ID ================= -->
+   
     <div class="tab-pane fade" id="customid">
         @await Html.PartialAsync("_CustomIdTab", Model)
     </div>
 
-    <!-- ================= STATS ================= -->
 
     <div class="tab-pane fade" id="stats" role="tabpanel">
         @await Html.PartialAsync("_StatsPartial", Model)
@@ -250,7 +245,6 @@
             }
         </div>
 
-        <!-- ========== ACCESS ========== -->
         <div class="tab-pane fade" id="access">
             <h5>@L["Access_settings"]</h5>
 
@@ -347,8 +341,6 @@
             }
         </div>
 
-
-        <!-- ========== FIELDS ========== -->
         <div class="tab-pane fade" id="elements">
             @await Html.PartialAsync("_InventoriesFields", new CourseWork.Models.InventoryFieldsVM
    {
@@ -377,7 +369,6 @@
 @section Scripts {
     <script src="https://unpkg.com/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
     <script>
-        // ======== SignalR discussion ========
         const connection = new signalR.HubConnectionBuilder().withUrl('/discussionHub').build();
         connection.start().then(() => connection.invoke('Join', '@Model.Inventory.Id'));
         connection.on('ReceiveMessage', msg => {
@@ -404,7 +395,6 @@
             }
         });
 
-        // ======== Image preview ========
         function previewImage(event) {
             const output = document.getElementById('imagePreview');
             output.src = URL.createObjectURL(event.target.files[0]);
@@ -419,7 +409,7 @@ function toggleAll(source) {
 }
 
              document.addEventListener('DOMContentLoaded', function () {
-            const selectAll = document.getElementById('selectAllUsers'); // новый id
+            const selectAll = document.getElementById('selectAllUsers'); 
             const checkboxes = document.querySelectorAll('.user-checkbox');
             const deleteBtn = document.getElementById('deleteSelectedBtn');
             const form = document.getElementById('bulkDeleteForm');

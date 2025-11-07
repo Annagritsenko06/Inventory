@@ -24,7 +24,7 @@ namespace CourseWork.Services
             });
             modelBuilder.Entity<InventoryField>()
     .Property(f => f.Id)
-    .UseIdentityAlwaysColumn(); // 
+    .UseIdentityAlwaysColumn(); 
 
             modelBuilder.Entity<InventoryItem>(b =>
             {

@@ -123,7 +123,6 @@ namespace InventoryManager.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            // Пытаемся найти существующий инвентарь
             var inv = await _db.Inventories
                 .Include(i => i.Tags)
                 .FirstOrDefaultAsync(i => i.Id == model.Id);
@@ -131,7 +130,6 @@ namespace InventoryManager.Controllers
 
             if (inv == null)
             {
-                // Новый инвентарь
                 inv = new Inventories
                 {
                     Name = model.Name,
@@ -144,22 +142,20 @@ namespace InventoryManager.Controllers
                 };
 
                 _db.Inventories.Add(inv);
-                await _db.SaveChangesAsync(); // сохраняем, чтобы EF присвоил Id
+                await _db.SaveChangesAsync(); 
             }
             else
             {
-                // Существующий инвентарь
+            
                 inv.Name = model.Name;
                 inv.Description = model.Description;
                 inv.Category = model.Category;
-                //inv.OwnerId = user.Id;
+               
                 inv.ImageUrl = model.ImageUrl;
                 inv.IsPublic = model.IsPublic;
                 inv.CustomIdFormatJson = model.CustomIdFormatJson;
             }
 
-            
-            // Работа с тегами
             if (!string.IsNullOrEmpty(Tags))
             {
                 var tagNames = Tags
@@ -167,9 +163,8 @@ namespace InventoryManager.Controllers
                     .Distinct()
                     .ToList();
 
-                // Загружаем существующие связи
                 await _db.Entry(inv).Collection(i => i.Tags).LoadAsync();
-                //inv.Tags.Clear();
+              
 
                 foreach (var name in tagNames)
                 {
@@ -179,7 +174,7 @@ namespace InventoryManager.Controllers
                         tag = new InventoryTag { Name = name };
                         _db.InventoryTags.Add(tag);
                     }
-                    inv.Tags.Add(tag); // EF создаст запись в inventory_tag_links
+                    inv.Tags.Add(tag); 
                 }
             }
 
@@ -208,11 +203,11 @@ namespace InventoryManager.Controllers
                     break;
 
                 case "edit":
-                    // Редирект на страницу редактирования первого выбранного элемента
+                    
                     return RedirectToAction("ItemDetails", new { id = selectedIds[0], isEdit = true });
 
                 case "view":
-                    // Редирект на просмотр первого выбранного элемента
+                    
                     return RedirectToAction("ItemDetails", new { id = selectedIds[0], isEdit = false });
             }
 
@@ -231,7 +226,6 @@ namespace InventoryManager.Controllers
 
             if (item == null) return NotFound();
 
-            // Десериализация ValuesJson
             var values = JsonSerializer.Deserialize<Dictionary<string, string?>>(item.ValuesJson ?? "{}")
                          ?? new Dictionary<string, string?>();
 
@@ -272,7 +266,6 @@ namespace InventoryManager.Controllers
 
             if (inventory == null) return BadRequest();
 
-            // Формируем словарь для сериализации в JSON
             var values = new Dictionary<string, string?>();
 
             var orderedFields = inventory.Fields.OrderBy(f => f.Order).ToList();
@@ -314,11 +307,9 @@ namespace InventoryManager.Controllers
                     break;
 
                 case "edit":
-                    // Редирект на страницу редактирования первого выбранного элемента
                     return RedirectToAction("ItemDetails", new { id = selectedIds[0], isEdit = true });
 
                 case "view":
-                    // Редирект на просмотр первого выбранного элемента
                     return RedirectToAction("ItemDetails", new { id = selectedIds[0], isEdit = false });
             }
 
@@ -338,7 +329,6 @@ namespace InventoryManager.Controllers
             switch (action.ToLower())
             {
                 case "delete":
-                    // Удаляем все выбранные поля
                     var fieldsToDelete = _db.InventoryFields.Where(f => selectedFieldIds.Contains(f.Id)).ToList();
                     if (fieldsToDelete.Any())
                     {
@@ -349,11 +339,9 @@ namespace InventoryManager.Controllers
                     return RedirectToAction("Details", new { id = inventoryId });
 
                 case "edit":
-                    // Редактируем первое выбранное поле
                     return RedirectToAction("FieldDetails", new { id = selectedFieldIds[0], isEdit = true });
 
                 case "view":
-                    // Просмотр первого выбранного поля
                     return RedirectToAction("FieldDetails", new { id = selectedFieldIds[0], isEdit = false });
             }
 
@@ -384,14 +372,12 @@ namespace InventoryManager.Controllers
 
             if (field.Id == 0)
             {
-                // Добавление нового поля
                 _db.InventoryFields.Add(field);
                 _logger.LogInformation("Добавление нового поля: {@Field}", field);
                 TempData["Success"] = "Поле добавлено";
             }
             else
             {
-                // Редактирование существующего
                 var existing = await _db.InventoryFields.FindAsync(field.Id);
                 if (existing == null)
                 {
@@ -429,10 +415,9 @@ namespace InventoryManager.Controllers
                 return RedirectToAction("Index", "Home");
 
 
-            // Получаем инвентари, которые имеют этот тег
             var inventories = await _db.Inventories
                 .Include(i => i.Items)
-                .Include(i => i.Tags) // включаем теги
+                .Include(i => i.Tags) 
                 .Where(i => i.Tags.Any(t => t.Name == tag))
                 .ToListAsync();
 
@@ -462,7 +447,6 @@ namespace InventoryManager.Controllers
         {
             Console.WriteLine($"AddUserAccess called: inventoryId={inventoryId},id пользователя= {userId} ");
 
-            // Загружаем инвентарь с access_list
             var inventory = await _db.Inventories
                 .Include(i => i.access_list)
                 .ThenInclude(a => a.user)
@@ -478,7 +462,6 @@ namespace InventoryManager.Controllers
                 return RedirectToAction("Details", "Inventories", new { id = inventory.Id });
             }
 
-            // Проверяем, что доступа еще нет
             if (inventory.access_list.Any(a => a.user_id == user.Id))
             {
                 TempData["Warning"] = $"У пользователя {user.UserName} уже есть доступ.";
@@ -512,12 +495,10 @@ namespace InventoryManager.Controllers
                 return RedirectToAction("Details", new { id = inventoryId });
             }
 
-            // Проверяем наличие инвентаря
             var inventoryExists = await _db.Inventories.AnyAsync(i => i.Id == inventoryId);
             if (!inventoryExists)
                 return NotFound();
 
-            // Находим все доступы, которые нужно удалить
             var accessesToDelete = await _db.AccessInventories
                 .Where(a => a.inventory_template_id == inventoryId && selectedUserIds.Contains(a.user_id))
                 .ToListAsync();
@@ -542,7 +523,6 @@ namespace InventoryManager.Controllers
         {
             if (string.IsNullOrWhiteSpace(term)) return Json(new List<string>());
 
-            // Берем все теги, имена которых начинаются с term
             var tags = await _db.InventoryTags
                 .Where(t => t.Name.StartsWith(term))
                 .Select(t => t.Name)
@@ -656,7 +636,6 @@ namespace InventoryManager.Controllers
                     string key = $"Field_{field.Id}";
                     string? value = form[key];
 
-                    // Правильная обработка типов полей
                     switch (field.Type)
                     {
                         case FieldType.Boolean:
@@ -671,7 +650,6 @@ namespace InventoryManager.Controllers
                         case FieldType.TextSingle:
                         case FieldType.TextMulti:
                         case FieldType.ImageLink:
-                            // Оставляем как есть, но проверяем на null
                             if (string.IsNullOrEmpty(value))
                                 value = null;
                             break;
@@ -680,7 +658,6 @@ namespace InventoryManager.Controllers
                     values[field.Name] = value;
                 }
 
-                // Генерируем пользовательский ID
                 string customId = await GenerateCustomIdAsync(inventory);
 
                 var item = new InventoryItem
@@ -699,7 +676,6 @@ namespace InventoryManager.Controllers
             }
             catch (Exception ex)
             {
-                // Логируем ошибку и возвращаем пользователя на форму с сообщением об ошибке
                 ModelState.AddModelError("", $"Ошибка при добавлении элемента: {ex.Message}");
                 return RedirectToAction("AddItem", new { inventoryId });
             }
@@ -753,7 +729,6 @@ namespace InventoryManager.Controllers
 
         private async Task<string> GenerateCustomIdAsync(Inventories inventory)
         {
-            // Если есть пользовательский формат, используем его
             if (!string.IsNullOrEmpty(inventory.CustomIdFormatJson))
             {
                 var format = CustomIdFormat.FromJson(inventory.CustomIdFormatJson);
@@ -762,8 +737,6 @@ namespace InventoryManager.Controllers
                     return await GenerateCustomIdWithFormatAsync(inventory, format);
                 }
             }
-
-            // Иначе используем простую генерацию
             var existingIds = await _db.InventoryItems
                 .Where(i => i.InventoryId == inventory.Id)
                 .Select(i => i.CustomId)

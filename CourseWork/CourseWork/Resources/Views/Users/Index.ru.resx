@@ -117,49 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Admin" xml:space="preserve">
-    <value>Admin</value>
+  <data name="Active" xml:space="preserve">
+    <value>Активен</value>
   </data>
-  <data name="Dark" xml:space="preserve">
-    <value>Dark</value>
+  <data name="Block" xml:space="preserve">
+    <value>Заблокировать</value>
   </data>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="Blocked" xml:space="preserve">
+    <value>Заблокирован</value>
   </data>
-  <data name="Inventories" xml:space="preserve">
-    <value>Inventories</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
   </data>
-  <data name="Language" xml:space="preserve">
-    <value>Language</value>
+  <data name="Email" xml:space="preserve">
+    <value>Эл. почта</value>
   </data>
-  <data name="Light" xml:space="preserve">
-    <value>Light</value>
+  <data name="FilterUsers" xml:space="preserve">
+    <value>Фильтр пользователей...</value>
   </data>
-  <data name="Login" xml:space="preserve">
-    <value>Login</value>
+  <data name="GrantAdmin" xml:space="preserve">
+    <value>Назначить администратора</value>
   </data>
-  <data name="Logout" xml:space="preserve">
-    <value>Logout</value>
+  <data name="Name" xml:space="preserve">
+    <value>Имя</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="RevokeAdmin" xml:space="preserve">
+    <value>Убрать права администратора</value>
   </data>
-  <data name="Search" xml:space="preserve">
-    <value>Search</value>
+  <data name="Roles" xml:space="preserve">
+    <value>Роли</value>
   </data>
-  <data name="Theme" xml:space="preserve">
-    <value>Theme</value>
+  <data name="Status" xml:space="preserve">
+    <value>Статус</value>
   </data>
-  <data name="Users" xml:space="preserve">
-    <value>Users</value>
+  <data name="Unblock" xml:space="preserve">
+    <value>Разблокировать</value>
   </data>
-  <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome to InventoryManager!</value>
+  <data name="Unverified" xml:space="preserve">
+    <value>Не подтверждён</value>
   </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Russian" xml:space="preserve">
-    <value>Russian</value>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Управление пользователями</value>
   </data>
 </root>

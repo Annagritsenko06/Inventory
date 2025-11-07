@@ -1076,3 +1076,11 @@ D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Inventories._StatsPartial.ru.resources
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Profile.en.resources
 D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Profile.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Index.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users.Index.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users._TemplatesTable.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Views.Users._TemplatesTable.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Search1.Index.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Search1.Index.ru.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Registration.Register.en.resources
+D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.Resources.Registration.Register.ru.resources

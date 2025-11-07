@@ -1,15 +1,16 @@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer L
 @model IEnumerable<CourseWork.Models.UserRolesViewModel>
 
 <div class="container mt-4">
-    <h2>User Management</h2>
+    <h2>@L["UserManagement"]</h2>
 
     <form method="post" id="toolbarForm">
         <div class="d-flex gap-2 mb-3">
-            <button type="submit" formaction="@Url.Action("Block", "Users")" class="btn btn-primary">Block</button>
-            <button type="submit" formaction="@Url.Action("Unblock", "Users")" class="btn btn-success">Unblock</button>
-            <button type="submit" formaction="@Url.Action("Delete", "Users")" class="btn btn-danger">Delete</button>
-            <button type="submit" formaction="@Url.Action("AddAdminRole", "Users")" class="btn btn-outline-primary">Grant Admin</button>
-            <button type="submit" formaction="@Url.Action("RemoveAdminRole", "Users")" class="btn btn-outline-dark">Revoke Admin</button>
+            <button type="submit" formaction="@Url.Action("Block", "Users")" class="btn btn-primary">@L["Block"]</button>
+            <button type="submit" formaction="@Url.Action("Unblock", "Users")" class="btn btn-success">@L["Unblock"]</button>
+            <button type="submit" formaction="@Url.Action("Delete", "Users")" class="btn btn-danger">@L["Delete"]</button>
+            <button type="submit" formaction="@Url.Action("AddAdminRole", "Users")" class="btn btn-outline-primary">@L["GrantAdmin"]</button>
+            <button type="submit" formaction="@Url.Action("RemoveAdminRole", "Users")" class="btn btn-outline-dark">@L["RevokeAdmin"]</button>
         </div>
 
         <input type="text" id="filterInput" class="form-control mb-3" placeholder="Filter users..." style="max-width:300px;" />
@@ -18,10 +19,10 @@
             <thead class="table-light">
                 <tr>
                     <th><input type="checkbox" id="selectAll" /></th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Roles</th>
+                    <th>@L["Name"]</th>
+                    <th>@L["Email"]</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Roles"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,13 +36,13 @@
                             @switch (item.User.Status?.ToLower())
                             {
                                 case "active":
-                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge bg-success">@L["Active"]</span>
                                     break;
                                 case "blocked":
-                                    <span class="badge bg-danger">Blocked</span>
+                                    <span class="badge bg-danger">@L["Blocked"]</span>
                                     break;
                                 default:
-                                    <span class="badge bg-secondary">Unverified</span>
+                                    <span class="badge bg-secondary">@L["Unverified"]</span>
                                     break;
                             }
                         </td>

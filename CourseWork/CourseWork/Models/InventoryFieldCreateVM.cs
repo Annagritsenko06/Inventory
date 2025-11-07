@@ -2,16 +2,7 @@
 
 namespace CourseWork.Models
 {
-    //public class InventoryEditVM
-    //{
-    //    public Inventories Inventory { get; set; }
-    //    [ValidateNever]
-
-    //    public InventoryFieldsVM? Fields { get; set; } = new InventoryFieldsVM();
-    //    public string? SearchTerm { get; set; }
-    //    public string SortOrder { get; set; } = "name";
-
-    //}
+    
     public class InventoryFieldsVM
     {
      
