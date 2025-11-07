@@ -24,7 +24,6 @@ namespace task5.Controllers
             _db = db;
         }
 
-        [Authorize]
         public async Task<IActionResult> Profile(Guid? id)
         {
             var currentUserIdString = _userManager.GetUserId(User);
@@ -42,11 +41,23 @@ namespace task5.Controllers
                 .AsNoTracking()
                 .ToListAsync();
 
-            var writableInventories = await _db.Inventories
-                .Where(i => i.IsPublic || i.access_list.Any(a => a.user_id == id && a.type == access_type.Write))
-                .Include(i => i.Fields)
-                .AsNoTracking()
-                .ToListAsync();
+            IQueryable<Inventories> writableQuery;
+
+            if (User.IsInRole("Admin"))
+            {
+                writableQuery = _db.Inventories
+                    .Include(i => i.Fields)
+                    .AsNoTracking();
+            }
+            else
+            {
+                writableQuery = _db.Inventories
+                    .Where(i => i.IsPublic || i.access_list.Any(a => a.user_id == id && a.type == access_type.Write))
+                    .Include(i => i.Fields)
+                    .AsNoTracking();
+            }
+
+            var writableInventories = await writableQuery.ToListAsync();
 
             var model = new UserProfile
             {
