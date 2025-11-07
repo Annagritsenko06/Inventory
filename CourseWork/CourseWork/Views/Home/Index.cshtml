@@ -87,9 +87,12 @@
                         <div class="text-center py-5 text-muted">
                             <i class="fas fa-inbox mb-3" style="font-size: 3rem;"></i>
                             <p>@L["Noinv"]</p>
+                            @if (User?.Identity != null && User.Identity.IsAuthenticated){
                             <a asp-controller="Inventories" asp-action="Create" class="btn btn-outline-dark rounded-pill">
                                 @L["CreateFirst"]
                             </a>
+                            }
+
                         </div>
                     }
                 </div>
@@ -98,7 +101,6 @@
 
      
         <div class="col-lg-4">
-            <!-- Теги -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white border-0 pb-0">
                     <h5 class="fw-semibold text-dark mb-3">
