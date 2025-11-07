@@ -835,6 +835,10 @@ namespace InventoryManager.Controllers
             {
                 canEdit = true;
             }
+            else if (inventory.IsPublic)
+            {
+                canEdit = true;
+            }
             else if (user != null)
             {
                 canEdit = await _db.AccessInventories
