@@ -23,8 +23,9 @@
     
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="certs\" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="certs\private_key.pfx" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
 
 </Project>
