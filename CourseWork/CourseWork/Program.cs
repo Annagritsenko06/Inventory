@@ -16,7 +16,6 @@ using CourseWork.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------------- AUTH ----------------
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -31,7 +30,6 @@ builder.Services.AddAuthentication(options =>
     googleOptions.SaveTokens = true;
 });
 
-// ---------------- Cookie Settings ----------------
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "Identity.Application";
@@ -41,14 +39,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
-// ---------------- Data Protection ----------------
 var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys");
 Directory.CreateDirectory(keysFolder);
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
     .SetApplicationName("InventoryApp");
-// Проверка, что папка для ключей существует и доступна для записи
+
 if (!Directory.Exists(keysFolder))
 {
     Console.WriteLine($"[ERROR] Папка для ключей не существует: {keysFolder}");
@@ -71,7 +68,6 @@ else
 }
 
 
-// ---------------- HTTPS ----------------
 builder.Services.AddHttpsRedirection(options =>
 {
     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
@@ -85,13 +81,11 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromDays(60);
 });
 
-// ---------------- MVC + Localization ----------------
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization()
     .AddSessionStateTempDataProvider();
 
-// ---------------- EF + Identity ----------------
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -109,7 +103,6 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-// ---------------- Session ----------------
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -123,7 +116,6 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
 
-// ---------------- Localization ----------------
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -134,10 +126,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders = new[] { new CookieRequestCultureProvider() };
 });
 
-// ---------------- Build ----------------
 var app = builder.Build();
 
-// ---------------- Middleware ----------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -151,7 +141,6 @@ app.UseExceptionHandler(errorApp =>
         await context.Response.WriteAsync("Произошла ошибка аутентификации. Попробуйте снова.");
     });
 });
-// 1️⃣ Forwarded Headers - до всего, чтобы HTTPS и Scheme корректно работали
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
@@ -162,20 +151,16 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// 2️⃣ Localization
 var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(locOptions);
 
 app.UseRouting();
 
-// 3️⃣ Session перед Authentication
 app.UseSession();
 
-// 4️⃣ Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ---------------- Ensure Admin ----------------
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
@@ -186,7 +171,6 @@ using (var scope = app.Services.CreateScope())
     await registrationController.EnsureAdminExists();
 }
 
-// ---------------- Routes ----------------
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

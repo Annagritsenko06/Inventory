@@ -17,105 +17,105 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CourseWork
 build_property.RootNamespace = CourseWork
-build_property.ProjectDir = D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork\
+build_property.ProjectDir = D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\5 СЕМ\стажировка\Inventory\CourseWork\CourseWork
+build_property.MSBuildProjectDirectory = D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Home/Index.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/AddItem.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/AddItem.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcQWRkSXRlbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/Details.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/FieldDetails.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/FieldDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcRmllbGREZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/Index.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/ItemDetails.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/ItemDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcSXRlbURldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_CustomIdTab.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_CustomIdTab.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcX0N1c3RvbUlkVGFiLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_InventoriesFields.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_InventoriesFields.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcX0ludmVudG9yaWVzRmllbGRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_SettingsTab.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_SettingsTab.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcX1NldHRpbmdzVGFiLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_StatsPartial.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Inventories/_StatsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3JpZXNcX1N0YXRzUGFydGlhbC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/Login.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVnaXN0cmF0aW9uXExvZ2luLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/Register.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVnaXN0cmF0aW9uXFJlZ2lzdGVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/_ViewStart.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Registration/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVnaXN0cmF0aW9uXF9WaWV3U3RhcnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Search1/Index.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Search1/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VhcmNoMVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/Error.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_LayoutMain.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_LayoutMain.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXRNYWluLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/Index.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/Profile.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcUHJvZmlsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/_TemplatesTable.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Users/_TemplatesTable.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcX1RlbXBsYXRlc1RhYmxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/_ViewImports.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/_ViewStart.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/5 СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_Layout.cshtml]
+[D:/5СЕМ/стажировка/Inventory/CourseWork/CourseWork/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-tyddf0lxbl

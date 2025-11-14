@@ -104,7 +104,7 @@ else
                 });
             }
         });
-
+       
         window.sortTable = function(header, columnIndex) {
             const table = header.closest('table');
             const tbody = table.querySelector('tbody');
@@ -122,6 +122,9 @@ else
 
             table.querySelectorAll('th').forEach(th => th.classList.remove('asc', 'desc'));
             header.classList.add(ascending ? 'asc' : 'desc');
+
         };
+             
+        }
     </script>
 }

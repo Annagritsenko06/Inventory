@@ -17,6 +17,18 @@
             </button>
         </li>
     </ul>
+    <form asp-controller="Salesforce" asp-action="SyncUser" method="post">
+        <label>Название компании:</label>
+        <input type="text" name="CompanyName" required />
+
+        <label>Телефон:</label>
+        <input type="text" name="Phone" required />
+
+        <label>Адрес:</label>
+        <input type="text" name="Address" required />
+
+        <button type="submit">Синхронизировать с Salesforce</button>
+    </form>
 
     <div class="tab-content mt-3">
         <div class="tab-pane fade show active" id="owned" role="tabpanel">
@@ -33,6 +45,8 @@
             <div class="mb-3">
                 <input id="searchWritable" placeholder="🔍 @L["Filter_by_inventory_name"]" class="form-control" />
             </div>
+            
+
             <div id="writableContainer" class="shadow-sm rounded p-2">
                 @await Html.PartialAsync("_TemplatesTable", Model.WritableTemplates)
             </div>

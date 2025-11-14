@@ -16,8 +16,15 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="NetCoreForce.Client" Version="5.0.0" />
+    <PackageReference Include="NetCoreForce.Models" Version="5.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.0" />
     
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="certs\" />
   </ItemGroup>
 
 </Project>
