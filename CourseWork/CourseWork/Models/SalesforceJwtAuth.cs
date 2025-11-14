@@ -101,7 +101,6 @@ namespace CourseWork.Models
                     AccountNumber = model.AccountNumber,
                     Website = model.Website,
                     Industry = model.Industry,
-                    Employees = model.Employees,
                     AnnualRevenue = model.AnnualRevenue
                 };
 

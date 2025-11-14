@@ -45,7 +45,6 @@ namespace CourseWork.Controllers
         public string AccountNumber { get; set; }     
         public string Website { get; set; }           
         public string Industry { get; set; }          
-        public int? Employees { get; set; }           
         public decimal? AnnualRevenue { get; set; }   
            
         public string Rating { get; set; }              
