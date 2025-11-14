@@ -1346,3 +1346,4 @@ D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0
 D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.pdb
 D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\CourseWork.genruntimeconfig.cache
 D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\obj\Debug\net9.0\ref\CourseWork.dll
+D:\5СЕМ\стажировка\Inventory\CourseWork\CourseWork\bin\Debug\net9.0\certs\private_key.pfx

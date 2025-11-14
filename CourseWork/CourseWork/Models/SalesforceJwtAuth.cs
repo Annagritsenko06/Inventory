@@ -92,7 +92,19 @@ namespace CourseWork.Models
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                 // Account
-                var accountPayload = new { Name = model.CompanyName, Phone = model.Phone };
+                var accountPayload = new
+                {
+                    Name = model.CompanyName,
+                    Phone = model.Phone,
+                    BillingStreet = model.Address,
+                    Rating = model.Rating,
+                    AccountNumber = model.AccountNumber,
+                    Website = model.Website,
+                    Industry = model.Industry,
+                    Employees = model.Employees,
+                    AnnualRevenue = model.AnnualRevenue
+                };
+
                 Console.WriteLine("Создаём Account в Salesforce...");
                 var accResp = await client.PostAsync(
                     $"{url}/services/data/v57.0/sobjects/Account",
@@ -114,10 +126,14 @@ namespace CourseWork.Models
                 // Contact
                 var contactPayload = new
                 {
-                    FirstName = model.CompanyName,
-                    LastName = "User",
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
                     Phone = model.Phone,
                     MailingStreet = model.Address,
+                    Title = model.Title,
+                    Department = model.Department,
+                    Birthdate = model.Birthdate?.ToString("yyyy-MM-dd"), // Формат даты для Salesforce
                     AccountId = accId
                 };
 
