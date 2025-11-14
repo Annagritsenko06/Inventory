@@ -24,11 +24,10 @@ namespace CourseWork.Models
                 var sf = _configuration.GetSection("Salesforce");
 
                 Console.WriteLine("Загружаем сертификат...");
-                var cert = new X509Certificate2(
-                    sf["PrivateKeyPath"],
-                    sf["PrivateKeyPassword"],
-                    X509KeyStorageFlags.Exportable
-                );
+                var certPath = Path.Combine(AppContext.BaseDirectory, "certs", "private_key.pfx");
+                var cert = new X509Certificate2(certPath, sf["PrivateKeyPassword"], X509KeyStorageFlags.Exportable);
+
+                
 
                 Console.WriteLine("Формируем JWT...");
                 var now = DateTime.UtcNow;
