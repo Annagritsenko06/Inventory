@@ -212,6 +212,16 @@
     @if (isOwnerOrAdmin)
     {
         <div class="tab-pane fade" id="edit">
+            <form asp-controller="Inventories" asp-action="GenerateToken" method="post">
+                <input type="hidden" asp-for="Inventory.Id" name="Id"/>
+
+                <div class="modal-header">
+                    <button type="submit" class="btn btn-primary">
+                        Create token for Inventory
+                    </button>
+                </div>
+            </form>
+
             @using (Html.BeginForm("EditInv", "Inventories", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()

@@ -30,6 +30,9 @@ namespace CourseWork.Models
         [Column("custom_id_format_json", TypeName = "jsonb")]
 
         public string? CustomIdFormatJson { get; set; }
+        [Column("api_token")]
+        public string? ApiToken { get; set; }
+
 
         public ICollection<InventoryItem> Items { get; set; } = new List<InventoryItem>();
 

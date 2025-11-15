@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "ContainingType": "CourseWork.Controllers.InventoryApiController",
+    "Method": "GetInventoryByToken",
+    "RelativePath": "api/inventory/{token}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

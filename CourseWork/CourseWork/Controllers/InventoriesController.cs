@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 
 namespace InventoryManager.Controllers
@@ -37,6 +38,29 @@ namespace InventoryManager.Controllers
 
             return Ok(items);
         }
+        [HttpPost]
+        public async Task<IActionResult> GenerateToken(int Id)
+        {
+            var inv = await _db.Inventories.FindAsync(Id);
+            if (inv == null) return NotFound();
+
+            bool wasNew = string.IsNullOrEmpty(inv.ApiToken);
+
+            var bytes = RandomNumberGenerator.GetBytes(32);
+            inv.ApiToken = Convert.ToBase64String(bytes);
+            _db.Entry(inv).Property(i => i.ApiToken).IsModified = true;
+            await _db.SaveChangesAsync();
+
+
+            TempData["Success"] = wasNew
+                ? "API token has been generated."
+                : "API token has been regenerated.";
+
+            return RedirectToAction("Details", new { id = Id });
+        }
+
+
+
         public IActionResult Create()
         {
             var newInventory = new Inventories();
