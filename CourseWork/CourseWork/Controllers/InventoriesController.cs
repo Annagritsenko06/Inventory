@@ -47,7 +47,12 @@ namespace InventoryManager.Controllers
             bool wasNew = string.IsNullOrEmpty(inv.ApiToken);
 
             var bytes = RandomNumberGenerator.GetBytes(32);
-            inv.ApiToken = Convert.ToBase64String(bytes);
+            string token = Convert.ToBase64String(bytes)
+        .TrimEnd('=')       // убираем символы '='
+        .Replace('+', '-')  // заменяем '+' на '-'
+        .Replace('/', '_'); // заменяем '/' на '_'
+
+            inv.ApiToken = token;
             _db.Entry(inv).Property(i => i.ApiToken).IsModified = true;
             await _db.SaveChangesAsync();
 
