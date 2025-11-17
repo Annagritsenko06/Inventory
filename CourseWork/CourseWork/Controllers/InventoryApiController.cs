@@ -69,6 +69,10 @@ public class InventoryApiController : ControllerBase
                         else if (el.ValueKind == JsonValueKind.String)
                         {
                             string str = el.GetString()!;
+
+                            if (str.StartsWith("http://") || str.StartsWith("https://"))
+                                continue;
+
                             if (double.TryParse(str, out var num))
                             {
                                 if (!numeric.ContainsKey(kv.Key))
