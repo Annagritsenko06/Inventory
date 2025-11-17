@@ -59,7 +59,7 @@ namespace InventoryManager.Controllers
 
             TempData["Success"] = wasNew
                 ? $"API token has been generated. Copy api token: {token}"
-                : "API token has been regenerated.";
+                :  $"API token has been regenerated. Copy api token: {token}";
 
             return RedirectToAction("Details", new { id = Id });
         }
