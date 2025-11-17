@@ -48,9 +48,9 @@ namespace InventoryManager.Controllers
 
             var bytes = RandomNumberGenerator.GetBytes(32);
             string token = Convert.ToBase64String(bytes)
-        .TrimEnd('=')       // убираем символы '='
-        .Replace('+', '-')  // заменяем '+' на '-'
-        .Replace('/', '_'); // заменяем '/' на '_'
+        .TrimEnd('=')      
+        .Replace('+', '-')  
+        .Replace('/', '_'); 
 
             inv.ApiToken = token;
             _db.Entry(inv).Property(i => i.ApiToken).IsModified = true;
@@ -58,7 +58,7 @@ namespace InventoryManager.Controllers
 
 
             TempData["Success"] = wasNew
-                ? "API token has been generated."
+                ? $"API token has been generated. Copy api token: {token}"
                 : "API token has been regenerated.";
 
             return RedirectToAction("Details", new { id = Id });

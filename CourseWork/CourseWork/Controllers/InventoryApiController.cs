@@ -41,8 +41,11 @@ public class InventoryApiController : ControllerBase
                 name = inv.Name,
                 description = inv.Description,
                 fields = inv.Fields.Select(f => new { f.Name, f.Type }),
+                fieldCount = inv.Fields.Count, 
+                itemCount = inv.Items.Count,  
                 aggregates
             });
+
         }
 
         private object CalculateAggregates(List<Dictionary<string, object>> items)
@@ -60,15 +63,24 @@ public class InventoryApiController : ControllerBase
                         {
                             double val = el.GetDouble();
                             if (!numeric.ContainsKey(kv.Key))
-                                numeric[kv.Key] = new();
+                                numeric[kv.Key] = new List<double>();
                             numeric[kv.Key].Add(val);
                         }
-                        if (el.ValueKind == JsonValueKind.String)
+                        else if (el.ValueKind == JsonValueKind.String)
                         {
-                            string val = el.GetString()!;
-                            if (!text.ContainsKey(kv.Key))
-                                text[kv.Key] = new();
-                            text[kv.Key].Add(val);
+                            string str = el.GetString()!;
+                            if (double.TryParse(str, out var num))
+                            {
+                                if (!numeric.ContainsKey(kv.Key))
+                                    numeric[kv.Key] = new List<double>();
+                                numeric[kv.Key].Add(num);
+                            }
+                            else
+                            {
+                                if (!text.ContainsKey(kv.Key))
+                                    text[kv.Key] = new List<string>();
+                                text[kv.Key].Add(str);
+                            }
                         }
                     }
                 }
