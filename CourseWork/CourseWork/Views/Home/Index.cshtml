@@ -1,5 +1,19 @@
 ﻿@model IEnumerable<CourseWork.Models.Inventories>
 @using Microsoft.AspNetCore.Mvc.Localization
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 @{
     ViewData["Title"] = "Главная";
     var tags = ViewBag.Tags as IEnumerable<string> ?? Enumerable.Empty<string>();

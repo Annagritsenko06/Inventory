@@ -50,6 +50,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.17.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.Facebook": {
               "target": "Package",
               "version": "[9.0.10, )"
@@ -76,6 +80,10 @@
               "target": "Package",
               "version": "[9.0.10, )"
             },
+            "Microsoft.Identity.Client": {
+              "target": "Package",
+              "version": "[4.79.2, )"
+            },
             "NetCoreForce.Client": {
               "target": "Package",
               "version": "[5.0.0, )"
@@ -90,7 +98,7 @@
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
-              "version": "[6.30.0, )"
+              "version": "[8.15.0, )"
             }
           },
           "imports": [

@@ -126,6 +126,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.RequestCultureProviders = new[] { new CookieRequestCultureProvider() };
 });
 
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -176,5 +177,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<CourseWork.Hubs.DiscussionHub>("/discussionHub");
+
 
 app.Run();
